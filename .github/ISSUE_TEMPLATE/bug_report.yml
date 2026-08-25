@@ -1,0 +1,54 @@
+name: Bug Report
+description: Something is broken in Pointr
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug!
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected Package
+      options:
+        - "@pointr/vite-plugin"
+        - "@pointr/overlay"
+        - "@pointr/mcp-server"
+        - "@pointr/context-packager"
+        - "Multiple packages"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: What happened? What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Install @pointr/vite-plugin
+        2. Alt+Click element
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Package versions
+      placeholder: "@pointr/vite-plugin@0.1.0, vite@5.x, react@18.x"
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: AI Agent
+      options:
+        - Claude Code
+        - Cursor
+        - Windsurf
+        - Other
+        - Not applicable

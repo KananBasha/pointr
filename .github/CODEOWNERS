@@ -1,0 +1,7 @@
+# All files require review from the owner
+* @KananBasha
+
+# Critical packages
+/packages/mcp-server/ @KananBasha
+/packages/vite-plugin/ @KananBasha
+/.github/workflows/ @KananBasha

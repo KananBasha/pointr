@@ -1,0 +1,43 @@
+{
+  "name": "@pointr/overlay",
+  "version": "0.1.0",
+  "description": "In-browser overlay for Pointr — Alt+Click element picker that sends context to AI agents",
+  "keywords": [
+    "dx",
+    "ai",
+    "mcp",
+    "react",
+    "devtools",
+    "overlay"
+  ],
+  "homepage": "https://pointr.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KananBasha/pointr"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.iife.js",
+  "exports": {
+    ".": "./dist/index.iife.js",
+    "./types": "./dist/types.d.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@vitest/browser": "^2.0.4",
+    "jsdom": "^30.0.1",
+    "tsup": "^8.2.0",
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.4"
+  }
+}

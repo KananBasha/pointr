@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+*.js.map
+
+# Test outputs
+coverage/
+playwright-report/
+test-results/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/settings.json
+*.suo
+
+# Turbo
+.turbo/
+
+# Changeset temp
+.changeset/*.md
+!.changeset/config.json

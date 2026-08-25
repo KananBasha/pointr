@@ -1,0 +1,26 @@
+name: Feature Request
+description: Suggest an improvement or new feature
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Related Package
+      options:
+        - "@pointr/vite-plugin"
+        - "@pointr/overlay"
+        - "@pointr/mcp-server"
+        - "@pointr/context-packager"
+        - "New package / Core"
