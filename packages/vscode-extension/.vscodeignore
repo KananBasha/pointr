@@ -1,0 +1,9 @@
+.vscode/**
+.vscode-test/**
+src/**
+tests/**
+tsconfig.json
+tsup.config.ts
+vitest.config.mts
+.turbo/**
+*.vsix

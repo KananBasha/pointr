@@ -4,6 +4,13 @@
   "description": "VS Code & Cursor companion for Pointr — auto-focus files and lines clicked in browser runtime",
   "version": "0.1.0",
   "publisher": "pointr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KananBasha/pointr.git",
+    "directory": "packages/vscode-extension"
+  },
+  "license": "MIT",
+  "homepage": "https://kananbasha.github.io/pointr/",
   "engines": {
     "vscode": "^1.85.0"
   },

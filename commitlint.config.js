@@ -12,6 +12,8 @@ module.exports = {
         'init',      // @pointr/init
         'demo',      // apps/demo
         'landing',   // apps/landing
+        'vscode',    // packages/vscode-extension
+        'chrome',    // apps/chrome-extension
         'docs',      // documentation
         'ci',        // GitHub Actions / DevOps
         'release',   // versioning / changesets
