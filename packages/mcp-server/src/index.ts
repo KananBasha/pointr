@@ -10,7 +10,25 @@ export async function createServer(
   port: number = 3333
 ): Promise<{ server: any; port: number }> {
   const app = express();
-  app.use(cors({ origin: "*" }));
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like curl, MCP agents, Postman, IDEs)
+        if (!origin) return callback(null, true);
+        // Allow local development environments (localhost, 127.0.0.1, 0.0.0.0)
+        const isLocalhost =
+          /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/.test(
+            origin
+          );
+        if (isLocalhost) {
+          return callback(null, true);
+        }
+        return callback(new Error("CORS origin not allowed by Pointr"), false);
+      },
+      methods: ["GET", "POST", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
   app.use(express.json({ limit: "50mb" }));
 
   const mcpServer = createMcpServer();
