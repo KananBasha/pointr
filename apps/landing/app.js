@@ -1,4 +1,4 @@
-// Pointr Interactive Sandbox Engine & Multilingual Smart NLP Engine (FR/EN)
+// Pointr Interactive Sandbox Engine — Preset Action Demonstrator
 document.addEventListener('DOMContentLoaded', () => {
   let isAltPressed = false;
   let isPointrModeActive = false;
@@ -10,19 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const demoContainer = document.getElementById('demo-container');
   const dialog = document.getElementById('pointr-dialog');
   const payloadOutput = document.getElementById('payload-output');
-  const promptInput = document.getElementById('pointr-prompt');
   const toggleBtn = document.getElementById('toggle-mode-btn');
   const resetBtn = document.getElementById('reset-demo-btn');
-  const sendBtn = document.getElementById('pointr-send-btn');
 
-  // Security Helper: Strictly sanitize all user text inputs to prevent XSS & DOM injection
-  function sanitizeInput(str) {
+  // Security Helper: Strictly sanitize strings for display
+  function sanitize(str) {
     if (!str) return '';
-    return str
-      .replace(/[<>]/g, '') // Strip angle brackets
-      .replace(/javascript:/gi, '') // Strip javascript pseudo-protocol
-      .trim()
-      .slice(0, 300); // Limit maximum length
+    return str.replace(/[<>]/g, '').trim().slice(0, 200);
   }
 
   // Save initial template state for instant reset
@@ -130,45 +124,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Real-time input synchronization with AI Inspector
-  if (promptInput) {
-    promptInput.addEventListener('input', () => {
-      if (currentTargetNode) {
-        generatePayload(currentTargetNode, sanitizeInput(promptInput.value));
-      }
-    });
-
-    promptInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        executeSmartMutation(sanitizeInput(promptInput.value));
-      } else if (e.key === 'Escape') {
-        hideDialog();
-      }
-    });
-  }
-
-  // Send button
-  if (sendBtn) {
-    sendBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      executeSmartMutation(sanitizeInput(promptInput.value));
-    });
-  }
-
   // Dialog interactions
   const closeBtn = document.getElementById('dialog-close');
   if (closeBtn) closeBtn.addEventListener('click', hideDialog);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideDialog();
+  });
   
   document.querySelectorAll('.suggestion-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const actionText = e.target.innerText;
-      promptInput.value = actionText;
-      generatePayload(currentTargetNode, actionText);
-      executeSmartMutation(actionText);
+      const actionType = e.currentTarget.getAttribute('data-action');
+      const actionLabel = e.currentTarget.textContent.trim();
+      executePresetAction(actionType, actionLabel);
     });
   });
 
@@ -182,8 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateCrosshair(element) {
     if (!crosshair || !element) return;
     const rect = element.getBoundingClientRect();
-    const compName = sanitizeInput(element.getAttribute('data-component') || element.tagName.toLowerCase());
-    const loc = sanitizeInput(element.getAttribute('data-loc') || '');
+    const compName = sanitize(element.getAttribute('data-component') || element.tagName.toLowerCase());
+    const loc = sanitize(element.getAttribute('data-loc') || '');
     
     crosshair.style.display = 'block';
     crosshair.classList.remove('hidden');
@@ -202,16 +172,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showDialog(x, y, element) {
     currentTargetNode = element;
-    const compName = sanitizeInput(element.getAttribute('data-component') || element.tagName.toLowerCase());
-    const loc = sanitizeInput(element.getAttribute('data-loc') || '');
+    const compName = sanitize(element.getAttribute('data-component') || element.tagName.toLowerCase());
+    const loc = sanitize(element.getAttribute('data-loc') || '');
     
     const targetLabel = document.getElementById('dialog-target-label');
     if (targetLabel) {
-      targetLabel.textContent = `Target: ${compName} ${loc}`;
+      targetLabel.textContent = `Target: <${compName}> ${loc}`;
     }
     
     const dialogWidth = 340;
-    const dialogHeight = 180;
+    const dialogHeight = 160;
     
     let posX = x + 10;
     let posY = y + 10;
@@ -222,27 +192,20 @@ document.addEventListener('DOMContentLoaded', () => {
     dialog.style.left = `${Math.max(10, posX)}px`;
     dialog.style.top = `${Math.max(10, posY)}px`;
     dialog.classList.remove('hidden');
-    promptInput.value = '';
-    promptInput.focus();
     
-    generatePayload(element, "");
+    generateInitialPayload(element);
   }
 
   function hideDialog() {
     if (dialog) dialog.classList.add('hidden');
   }
 
-  function generatePayload(element, intentText) {
+  function generateInitialPayload(element) {
     if (!element || !payloadOutput) return;
-    const compName = sanitizeInput(element.getAttribute('data-component') || element.tagName.toLowerCase());
-    const loc = sanitizeInput(element.getAttribute('data-loc') || '1:1');
+    const compName = sanitize(element.getAttribute('data-component') || element.tagName.toLowerCase());
+    const loc = sanitize(element.getAttribute('data-loc') || '1:1');
     const [line, col] = loc.split(':');
-    
-    const intent = (intentText !== undefined && intentText.trim() !== "") 
-      ? sanitizeInput(intentText) 
-      : "(waiting for your prompt...)";
-
-    const textSnippet = sanitizeInput((element.textContent || '').trim().substring(0, 40));
+    const textSnippet = sanitize((element.textContent || '').trim().substring(0, 40));
 
     const payload = {
       source: {
@@ -267,9 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       meta: {
-        intent: intent,
-        timestamp: new Date().toISOString(),
-        delivery: "MCP Server (port 3333) + Clipboard"
+        intent: "Choose an action in the overlay dialog...",
+        delivery: "MCP Server (port 3333)"
       }
     };
 
@@ -277,225 +239,48 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =========================================================================
-  // Intelligent Client-Side NLP Engine (Multilingual FR / EN & Fully Sanitized)
+  // Robust Preset Action Executor
   // =========================================================================
-  function executeSmartMutation(rawPrompt) {
+  function executePresetAction(actionType, actionLabel) {
     if (!currentTargetNode) return;
-    const prompt = sanitizeInput(rawPrompt || "");
-    const lower = prompt.toLowerCase();
-
-    if (!prompt) {
-      promptInput.focus();
-      return;
-    }
-
-    // Multilingual Color Dictionary (FR & EN)
-    const colorMap = {
-      // Gold / Yellow / Amber
-      gold: '#f59e0b',
-      doré: '#f59e0b',
-      dore: '#f59e0b',
-      or: '#f59e0b',
-      amber: '#f59e0b',
-      yellow: '#eab308',
-      jaune: '#eab308',
-      // Emerald / Green
-      emerald: '#10b981',
-      émeraude: '#10b981',
-      emeraude: '#10b981',
-      green: '#10b981',
-      vert: '#10b981',
-      verte: '#10b981',
-      // Red / Crimson
-      red: '#ef4444',
-      rouge: '#ef4444',
-      crimson: '#ef4444',
-      // Blue / Cyan / Sky
-      blue: '#3b82f6',
-      bleu: '#3b82f6',
-      bleue: '#3b82f6',
-      sky: '#0284c7',
-      cyan: '#06b6d4',
-      azur: '#3b82f6',
-      // Orange
-      orange: '#f97316',
-      // White
-      white: '#ffffff',
-      blanc: '#ffffff',
-      blanche: '#ffffff',
-      // Dark / Black
-      dark: '#050608',
-      sombre: '#050608',
-      black: '#000000',
-      noir: '#000000',
-      noire: '#000000',
-      // Gray / Slate
-      gray: '#64748b',
-      grey: '#64748b',
-      gris: '#64748b',
-      grise: '#64748b',
-      slate: '#475569',
-      // Pink
-      pink: '#ec4899',
-      rose: '#f43f5e',
-      // Purple mapped safely to royal blue (no purple workspace rule)
-      purple: '#2563eb',
-      violet: '#2563eb',
-      violette: '#2563eb'
-    };
-
-    let appliedDiffs = [];
     currentTargetNode.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+    let diff = "";
 
-    // Helper: Find color in a given substring
-    function findColor(text) {
-      if (!text) return null;
-      for (const [name, hex] of Object.entries(colorMap)) {
-        const regex = new RegExp(`\\b${name}\\b`, 'i');
-        if (regex.test(text) || text.includes(name)) {
-          return { name, hex };
-        }
-      }
-      const hexMatch = text.match(/#(?:[0-9a-f]{3}){1,2}\b/i);
-      if (hexMatch) return { name: hexMatch[0], hex: hexMatch[0] };
-      return null;
-    }
-
-    // 1. Color Matching & Multi-Clause Extraction
-    const isTextExplicit = lower.includes('text') || lower.includes('texte') || lower.includes('font') || lower.includes('police') || lower.includes('titre') || lower.includes('title') || lower.includes('écrit') || lower.includes('lettre') || lower.includes('couleur du texte');
-    const isBorderExplicit = lower.includes('border') || lower.includes('bordure') || lower.includes('contour') || lower.includes('outline');
-    const isBgExplicit = lower.includes('fond') || lower.includes('background') || lower.includes('bg') || lower.includes('arrière-plan') || lower.includes('arriere plan');
-
-    const globalColor = findColor(lower);
-
-    if (globalColor) {
-      const colorHex = globalColor.hex;
-
-      if (isTextExplicit) {
-        // Apply color directly to node AND all descendant text containers
-        currentTargetNode.style.color = colorHex;
-        currentTargetNode.querySelectorAll('*').forEach(child => {
-          child.style.color = colorHex;
-        });
-        appliedDiffs.push(`+ color: '${colorHex}'`);
-      } else if (isBorderExplicit) {
-        currentTargetNode.style.borderColor = colorHex;
-        currentTargetNode.style.borderWidth = '2px';
-        appliedDiffs.push(`+ borderColor: '${colorHex}'`);
-      } else if (isBgExplicit) {
-        currentTargetNode.style.backgroundColor = colorHex;
-        currentTargetNode.style.borderColor = colorHex;
-        if (colorHex === '#ffffff') {
-          currentTargetNode.style.color = '#000000';
-          currentTargetNode.querySelectorAll('*').forEach(c => c.style.color = '#000000');
-        } else if (colorHex !== '#050608' && colorHex !== '#000000') {
-          currentTargetNode.style.color = '#ffffff';
-        }
-        appliedDiffs.push(`+ backgroundColor: '${colorHex}'`);
-      } else {
-        // If element is a button or badge, change background + text
-        currentTargetNode.style.backgroundColor = colorHex;
-        currentTargetNode.style.borderColor = colorHex;
-        if (colorHex === '#ffffff') {
-          currentTargetNode.style.color = '#000000';
-          currentTargetNode.querySelectorAll('*').forEach(c => c.style.color = '#000000');
-        } else if (colorHex !== '#050608' && colorHex !== '#000000') {
-          currentTargetNode.style.color = '#ffffff';
-        }
-        appliedDiffs.push(`+ backgroundColor: '${colorHex}'`);
-      }
-    }
-
-    // 2. Value / Text Replacement (FR & EN)
-    // Check for quoted strings: "..." or '...' or «...»
-    const quoteMatch = prompt.match(/["'«]([^"'»]+)["'»]/);
-    // Check for currency or numbers: $250k, 500k, 1,000, 99%, $1M, 5000€
-    const numberMatch = prompt.match(/([\$€£]?\s*[\d,]+(?:\.\d+)?\s*[kKmMbB%]?|[\d,]+(?:\.\d+)?\s*[\$€£kKmMbB%])/);
-
-    if (quoteMatch) {
-      const newText = sanitizeInput(quoteMatch[1]);
-      const targetTextEl = currentTargetNode.querySelector('.card-value, .card-title, .mock-logo, .mock-badge') || currentTargetNode;
-      const oldText = sanitizeInput(targetTextEl.textContent || '');
-      targetTextEl.textContent = newText;
-      appliedDiffs.push(`- text: "${oldText}"\n+ text: "${newText}"`);
-    } else if (numberMatch && (lower.includes('$') || lower.includes('€') || lower.includes('k') || lower.includes('m') || lower.includes('%') || lower.includes('valeur') || lower.includes('value') || lower.includes('revenue') || lower.includes('nombre') || lower.includes('chiffre'))) {
-      const newNum = sanitizeInput(numberMatch[0].replace(/\s+/g, ''));
+    if (actionType === 'emerald') {
+      currentTargetNode.style.backgroundColor = 'var(--success-emerald)';
+      currentTargetNode.style.borderColor = 'var(--success-emerald)';
+      if (currentTargetNode.tagName === 'BUTTON') currentTargetNode.style.color = '#ffffff';
+      diff = "+ backgroundColor: '#10b981'\n+ borderColor: '#10b981'";
+    } else if (actionType === 'revenue') {
       const valEl = currentTargetNode.querySelector('.card-value') || currentTargetNode;
-      const oldVal = sanitizeInput(valEl.textContent || '');
-      valEl.textContent = newNum;
-      if (globalColor) valEl.style.color = globalColor.hex;
-      appliedDiffs.push(`- value: "${oldVal}"\n+ value: "${newNum}"`);
-    } else if (lower.includes('rename') || lower.includes('renommer') || lower.includes('change text') || lower.includes('changer texte') || lower.includes('mettre') || lower.includes('titre') || lower.includes('title')) {
-      // Extract target phrase after preposition (to / en / par / à)
-      const prepMatch = prompt.match(/(?:to|en|par|à|a)\s+([a-zA-Z0-9_\s\$\€\-]{2,30})$/i);
-      if (prepMatch) {
-        const customText = sanitizeInput(prepMatch[1]);
-        const targetTextEl = currentTargetNode.querySelector('.card-title, .mock-logo, .mock-badge, .card-value') || currentTargetNode;
-        const oldText = sanitizeInput(targetTextEl.textContent || '');
-        targetTextEl.textContent = customText;
-        appliedDiffs.push(`- label: "${oldText}"\n+ label: "${customText}"`);
-      }
-    }
-
-    // 3. Geometry & Styling (FR & EN)
-    if (lower.includes('round') || lower.includes('arrond') || lower.includes('radius') || lower.includes('pill') || lower.includes('circulaire')) {
-      currentTargetNode.style.borderRadius = '24px';
-      appliedDiffs.push(`+ borderRadius: '24px'`);
-    } else if (lower.includes('square') || lower.includes('carré') || lower.includes('carre') || lower.includes('sharp') || lower.includes('droit')) {
-      currentTargetNode.style.borderRadius = '0px';
-      appliedDiffs.push(`+ borderRadius: '0px'`);
-    }
-
-    if (lower.includes('big') || lower.includes('grand') || lower.includes('gros') || lower.includes('agrandir') || lower.includes('grossir') || lower.includes('large') || lower.includes('increase')) {
-      currentTargetNode.style.transform = 'scale(1.1)';
-      appliedDiffs.push(`+ transform: 'scale(1.1)'`);
-    } else if (lower.includes('small') || lower.includes('petit') || lower.includes('réduire') || lower.includes('reduire') || lower.includes('diminuer') || lower.includes('shrink')) {
-      currentTargetNode.style.transform = 'scale(0.9)';
-      appliedDiffs.push(`+ transform: 'scale(0.9)'`);
-    }
-
-    if (lower.includes('glow') || lower.includes('lueur') || lower.includes('briller') || lower.includes('shadow') || lower.includes('ombre') || lower.includes('neon')) {
-      const glowColor = globalColor ? globalColor.hex : 'var(--primary-blue)';
-      currentTargetNode.style.boxShadow = `0 0 25px ${glowColor}`;
-      appliedDiffs.push(`+ boxShadow: '0 0 25px ${glowColor}'`);
-    }
-
-    if (lower.includes('hide') || lower.includes('cacher') || lower.includes('masquer') || lower.includes('delete') || lower.includes('supprimer') || lower.includes('enlever') || lower.includes('invisible')) {
+      const oldVal = sanitize(valEl.textContent || '$124,500');
+      valEl.textContent = '$250,000';
+      valEl.style.color = 'var(--success-emerald)';
+      diff = `- value: "${oldVal}"\n+ value: "$250,000"\n+ color: '#10b981'`;
+    } else if (actionType === 'glow') {
+      currentTargetNode.style.borderRadius = '16px';
+      currentTargetNode.style.borderColor = 'var(--primary-blue)';
+      currentTargetNode.style.boxShadow = '0 0 25px rgba(59, 130, 246, 0.5)';
+      diff = "+ borderRadius: '16px'\n+ borderColor: '#3b82f6'\n+ boxShadow: '0 0 25px rgba(59, 130, 246, 0.5)'";
+    } else if (actionType === 'hide') {
       currentTargetNode.style.opacity = '0.15';
       currentTargetNode.style.filter = 'grayscale(100%)';
-      appliedDiffs.push(`- display: 'block'\n+ display: 'none'`);
-    } else if (lower.includes('show') || lower.includes('montrer') || lower.includes('afficher') || lower.includes('restore') || lower.includes('visible')) {
-      currentTargetNode.style.opacity = '1';
-      currentTargetNode.style.filter = 'none';
-      appliedDiffs.push(`+ display: 'block'`);
+      diff = "- display: 'block'\n+ display: 'none'";
     }
 
-    if (lower.includes('bold') || lower.includes('gras') || lower.includes('thicker') || lower.includes('épais') || lower.includes('epais')) {
-      currentTargetNode.style.fontWeight = '800';
-      appliedDiffs.push(`+ fontWeight: '800'`);
-    }
-
-    // Default fallback if no specific rule matched
-    if (appliedDiffs.length === 0) {
-      currentTargetNode.style.boxShadow = '0 0 20px var(--primary-blue)';
-      setTimeout(() => { 
-        if (currentTargetNode) currentTargetNode.style.boxShadow = 'none'; 
-      }, 1500);
-      appliedDiffs.push(`// Processed intent: "${prompt}"\n+ applyCustomPatch({ target: "${currentTargetNode.tagName.toLowerCase()}" })`);
-    }
-
-    // Update AI Agent Inspector Payload
+    // Update payload in Inspector
     try {
       const payload = JSON.parse(payloadOutput.textContent || '{}');
-      payload.meta.intent = prompt;
+      payload.meta.intent = actionLabel;
+      payload.meta.timestamp = new Date().toISOString();
       payload.aiAgentResponse = {
-        status: "200 OK — Code patched successfully",
-        astModifiedNode: currentTargetNode.getAttribute('data-component') || currentTargetNode.tagName.toLowerCase(),
-        diff: appliedDiffs.join('\n')
+        status: "200 OK — Diff generated & applied",
+        astNode: currentTargetNode.getAttribute('data-component') || currentTargetNode.tagName.toLowerCase(),
+        diff: diff
       };
       payloadOutput.textContent = JSON.stringify(payload, null, 2);
     } catch (e) {
-      // Fallback
+      // ignore
     }
 
     hideDialog();

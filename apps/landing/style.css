@@ -565,49 +565,35 @@ kbd {
   gap: 0.75rem;
 }
 
-#pointr-prompt {
-  width: 100%;
-  background: #050609;
-  border: 1px solid var(--border-bright);
-  padding: 0.65rem 0.85rem;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  outline: none;
-  font-family: var(--font-sans);
-  transition: all 0.2s;
+.dialog-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-#pointr-prompt:focus {
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2), 0 0 12px var(--primary-blue-glow);
-}
-
-.dialog-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.suggestions {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
 }
 
 .suggestion-btn {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-muted);
-  padding: 0.3rem 0.65rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.72rem;
+  color: var(--text-main);
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
   font-family: var(--font-sans);
-  transition: all 0.15s ease;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .suggestion-btn:hover {
@@ -615,35 +601,7 @@ kbd {
   color: #fff;
   border-color: var(--primary-blue);
   transform: translateY(-1px);
-}
-
-/* Gorgeous Send Button */
-.send-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: #ffffff;
-  border: none;
-  padding: 0.45rem 1rem;
-  border-radius: 6px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.send-btn:hover {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.65);
-  transform: translateY(-1px);
-}
-
-.send-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
 .hidden { display: none !important; }
