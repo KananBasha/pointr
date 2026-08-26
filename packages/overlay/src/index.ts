@@ -1,7 +1,7 @@
-import { initHighlight, destroyHighlight } from './highlight';
-import { showIntentDialog } from './intent-ui';
-import { sendToMCP } from './sender';
-import { PointrPayload } from './types';
+import { initHighlight, destroyHighlight } from "./highlight";
+import { showIntentDialog } from "./intent-ui";
+import { sendToMCP } from "./sender";
+import { PointrPayload } from "./types";
 
 let isActive = false;
 let indicator: HTMLDivElement | null = null;
@@ -9,8 +9,8 @@ let indicator: HTMLDivElement | null = null;
 function updateIndicator() {
   if (isActive) {
     if (!indicator) {
-      indicator = document.createElement('div');
-      indicator.textContent = '⊕ Pointr active';
+      indicator = document.createElement("div");
+      indicator.textContent = "⊕ Pointr active";
       indicator.style.cssText = `
         position: fixed;
         bottom: 12px;
@@ -28,26 +28,30 @@ function updateIndicator() {
       `;
       document.body.appendChild(indicator);
     }
-    indicator.style.display = 'block';
+    indicator.style.display = "block";
   } else if (indicator) {
-    indicator.style.display = 'none';
+    indicator.style.display = "none";
   }
 }
 
-function extractPayload(element: HTMLElement, intent: string, sourceAttr: string | null): PointrPayload {
-  let file = '';
+function extractPayload(
+  element: HTMLElement,
+  intent: string,
+  sourceAttr: string | null
+): PointrPayload {
+  let file = "";
   let line = 0;
   let column = 0;
-  
+
   if (sourceAttr) {
-    const parts = sourceAttr.split(':');
+    const parts = sourceAttr.split(":");
     if (parts.length >= 3) {
-      column = parseInt(parts.pop() || '0', 10);
-      line = parseInt(parts.pop() || '0', 10);
-      file = parts.join(':');
+      column = parseInt(parts.pop() || "0", 10);
+      line = parseInt(parts.pop() || "0", 10);
+      file = parts.join(":");
     } else if (parts.length === 2) {
-      line = parseInt(parts.pop() || '0', 10);
-      file = parts[0] ?? '';
+      line = parseInt(parts.pop() || "0", 10);
+      file = parts[0] ?? "";
     } else {
       file = sourceAttr;
     }
@@ -55,7 +59,7 @@ function extractPayload(element: HTMLElement, intent: string, sourceAttr: string
 
   const domAttrs: Record<string, string> = {};
   for (const attr of Array.from(element.attributes)) {
-    if (attr.name !== 'data-pointr-source') {
+    if (attr.name !== "data-pointr-source") {
       domAttrs[attr.name] = attr.value;
     }
   }
@@ -65,40 +69,55 @@ function extractPayload(element: HTMLElement, intent: string, sourceAttr: string
       file,
       line,
       column,
-      snippet: ''
+      snippet: "",
     },
     componentTree: [],
     dom: {
       tagName: element.tagName.toLowerCase(),
-      cssSelector: '',
-      xpath: '',
+      cssSelector: "",
+      xpath: "",
       attributes: domAttrs,
-      textContent: element.textContent?.slice(0, 200) || ''
+      textContent: element.textContent?.slice(0, 200) || "",
     },
     styles: {
       computed: {},
       designTokens: {},
-      tailwindClasses: Array.from(element.classList)
+      tailwindClasses: Array.from(element.classList),
     },
     screenshot: {
-      base64: '',
+      base64: "",
       width: 0,
-      height: 0
+      height: 0,
     },
     meta: {
       timestamp: new Date().toISOString(),
       url: window.location.href,
       intent,
-      pointrVersion: '0.1.0'
+      pointrVersion: "0.1.0",
     },
-    markdown: `Intent: ${intent}\nElement: <${element.tagName.toLowerCase()}>\nSource: ${sourceAttr || 'Unknown'}`
+    markdown: `## Pointr Element Context
+
+**Intent:** "${intent}"
+
+### Target Element
+- **Source File:** \`${file}:${line}:${column}\`
+- **DOM Element:** \`<${element.tagName.toLowerCase()}${
+      domAttrs.class ? ` class="${domAttrs.class}"` : ""
+    }>\`
+${domAttrs.id ? `- **ID:** \`${domAttrs.id}\`\n` : ""}${
+      element.textContent?.trim()
+        ? `- **Content:** "${element.textContent.trim().slice(0, 100)}"\n`
+        : ""
+    }
+### Instruction for AI Agent
+Please apply the requested changes to the component defined in \`${file}:${line}\`.`,
   };
-  
+
   return payload;
 }
 
 function handleGlobalKeydown(e: KeyboardEvent) {
-  if (e.key === 'Alt' && !isActive) {
+  if (e.key === "Alt" && !isActive) {
     isActive = true;
     updateIndicator();
     initHighlight();
@@ -106,7 +125,7 @@ function handleGlobalKeydown(e: KeyboardEvent) {
 }
 
 function handleGlobalKeyup(e: KeyboardEvent) {
-  if (e.key === 'Alt' && isActive) {
+  if (e.key === "Alt" && isActive) {
     isActive = false;
     updateIndicator();
     destroyHighlight();
@@ -115,15 +134,15 @@ function handleGlobalKeyup(e: KeyboardEvent) {
 
 async function handleGlobalClick(e: MouseEvent) {
   if (!e.altKey || !isActive) return;
-  
+
   e.preventDefault();
   e.stopPropagation();
 
   const target = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
   if (!target) return;
 
-  const sourceEl = target.closest('[data-pointr-source]') as HTMLElement | null;
-  const sourceAttr = sourceEl?.getAttribute('data-pointr-source') || null;
+  const sourceEl = target.closest("[data-pointr-source]") as HTMLElement | null;
+  const sourceAttr = sourceEl?.getAttribute("data-pointr-source") || null;
 
   const intent = await showIntentDialog(target, sourceAttr);
   if (intent !== null) {
@@ -135,13 +154,13 @@ async function handleGlobalClick(e: MouseEvent) {
 
 export function initPointr() {
   if (window.__POINTR_CONFIG__?.disabled) return;
-  
-  document.addEventListener('keydown', handleGlobalKeydown);
-  document.addEventListener('keyup', handleGlobalKeyup);
-  document.addEventListener('click', handleGlobalClick, { capture: true });
+
+  document.addEventListener("keydown", handleGlobalKeydown);
+  document.addEventListener("keyup", handleGlobalKeyup);
+  document.addEventListener("click", handleGlobalClick, { capture: true });
 }
 
 // Auto-init
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   initPointr();
 }
