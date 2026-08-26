@@ -238,6 +238,19 @@ kbd {
   flex-wrap: wrap;
 }
 
+.instructions-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.demo-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .pulse-dot {
   width: 8px;
   height: 8px;
@@ -245,7 +258,7 @@ kbd {
   border-radius: 50%;
   box-shadow: 0 0 10px var(--success-emerald);
   display: inline-block;
-  margin-right: 0.4rem;
+  margin-right: 0.2rem;
   animation: pulse-glow 2s infinite;
 }
 
@@ -268,6 +281,28 @@ kbd {
 }
 
 .toggle-mode-btn:hover {
+  background: var(--primary-blue-hover);
+  box-shadow: 0 0 12px var(--primary-blue-glow);
+}
+
+.reset-mode-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid var(--border-raw);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sharp);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-sans);
+}
+
+.reset-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: var(--border-bright);
+}
   background: var(--primary-blue-hover);
   box-shadow: 0 0 12px var(--primary-blue-glow);
 }

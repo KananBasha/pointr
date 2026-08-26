@@ -1,4 +1,4 @@
-// Vanilla JS for Pointr Landing Interactive Demo
+// Pointr Interactive Sandbox Engine & Natural Language UI Interpreter
 document.addEventListener('DOMContentLoaded', () => {
   let isAltPressed = false;
   let isPointrModeActive = false;
@@ -12,7 +12,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const payloadOutput = document.getElementById('payload-output');
   const promptInput = document.getElementById('pointr-prompt');
   const toggleBtn = document.getElementById('toggle-mode-btn');
+  const resetBtn = document.getElementById('reset-demo-btn');
   const sendBtn = document.getElementById('pointr-send-btn');
+
+  // Save initial template state for instant reset
+  const initialDemoHTML = demoContainer ? demoContainer.innerHTML : '';
+
+  // Reset Demo Button
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (demoContainer) {
+        demoContainer.innerHTML = initialDemoHTML;
+        demoContainer.style.cursor = 'default';
+        isPointrModeActive = false;
+        if (toggleBtn) {
+          toggleBtn.innerText = '🎯 Toggle Pointr Mode';
+          toggleBtn.style.background = 'var(--primary-blue)';
+        }
+        hideDialog();
+        hideCrosshair();
+        clearHoverStyles();
+        
+        payloadOutput.textContent = `// Demo reset to initial state.\n// Hold Alt + Click an element or toggle Pointr Mode to start.`;
+      }
+    });
+  }
 
   // Toggle Mode Button
   if (toggleBtn) {
@@ -33,11 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Track Alt Key
+  // Track Alt / Option Key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Alt' || e.key === 'Option') {
       isAltPressed = true;
-      demoContainer.style.cursor = 'crosshair';
+      if (demoContainer) demoContainer.style.cursor = 'crosshair';
       if (hoveredElement && demoContainer.contains(hoveredElement)) {
         updateCrosshair(hoveredElement);
       }
@@ -47,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keyup', (e) => {
     if (e.key === 'Alt' || e.key === 'Option') {
       isAltPressed = false;
-      if (!isPointrModeActive) {
+      if (!isPointrModeActive && demoContainer) {
         demoContainer.style.cursor = 'default';
         hideCrosshair();
         clearHoverStyles();
@@ -60,40 +84,41 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Track Mouse Movement inside demo container
-  demoContainer.addEventListener('mousemove', (e) => {
-    if (!isActive()) return;
-    
-    // Find closest element with data-component
-    const target = e.target.closest('[data-component]') || e.target;
-    
-    if (target !== hoveredElement && target !== demoContainer) {
-      clearHoverStyles();
-      hoveredElement = target;
-      target.classList.add('pointr-hovered');
-      updateCrosshair(target);
-    }
-  });
+  if (demoContainer) {
+    demoContainer.addEventListener('mousemove', (e) => {
+      if (!isActive()) return;
+      
+      const target = e.target.closest('[data-component]') || e.target;
+      
+      if (target !== hoveredElement && target !== demoContainer) {
+        clearHoverStyles();
+        hoveredElement = target;
+        target.classList.add('pointr-hovered');
+        updateCrosshair(target);
+      }
+    });
 
-  demoContainer.addEventListener('mouseleave', () => {
-    if (!isPointrModeActive) {
-      clearHoverStyles();
+    demoContainer.addEventListener('mouseleave', () => {
+      if (!isPointrModeActive) {
+        clearHoverStyles();
+        hideCrosshair();
+        hoveredElement = null;
+      }
+    });
+
+    // Handle Alt+Click or Click when Pointr Mode is active
+    demoContainer.addEventListener('click', (e) => {
+      if (!isActive() || !hoveredElement) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      showDialog(e.clientX, e.clientY, hoveredElement);
+      if (!isPointrModeActive) isAltPressed = false;
       hideCrosshair();
-      hoveredElement = null;
-    }
-  });
-
-  // Handle Alt+Click or Click when Pointr Mode is active
-  demoContainer.addEventListener('click', (e) => {
-    if (!isActive() || !hoveredElement) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    
-    showDialog(e.clientX, e.clientY, hoveredElement);
-    if (!isPointrModeActive) isAltPressed = false;
-    hideCrosshair();
-    clearHoverStyles();
-  });
+      clearHoverStyles();
+    });
+  }
 
   // Real-time input synchronization with AI Inspector
   if (promptInput) {
@@ -105,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     promptInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        executeAction('custom');
+        executeSmartMutation(promptInput.value);
       } else if (e.key === 'Escape') {
         hideDialog();
       }
@@ -115,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Send button
   if (sendBtn) {
     sendBtn.addEventListener('click', () => {
-      executeAction('custom');
+      executeSmartMutation(promptInput.value);
     });
   }
 
@@ -125,10 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
   
   document.querySelectorAll('.suggestion-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const action = e.target.getAttribute('data-action');
-      promptInput.value = e.target.innerText;
-      generatePayload(currentTargetNode, promptInput.value);
-      executeAction(action);
+      const actionText = e.target.innerText;
+      promptInput.value = actionText;
+      generatePayload(currentTargetNode, actionText);
+      executeSmartMutation(actionText);
     });
   });
 
@@ -140,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateCrosshair(element) {
+    if (!crosshair || !element) return;
     const rect = element.getBoundingClientRect();
     const compName = element.getAttribute('data-component') || element.tagName.toLowerCase();
     const loc = element.getAttribute('data-loc') || '';
@@ -150,11 +176,13 @@ document.addEventListener('DOMContentLoaded', () => {
     crosshair.style.width = `${rect.width}px`;
     crosshair.style.height = `${rect.height}px`;
     
-    crosshairLabel.innerText = loc ? `<${compName}> ${loc}` : `<${compName}>`;
+    if (crosshairLabel) {
+      crosshairLabel.innerText = loc ? `<${compName}> ${loc}` : `<${compName}>`;
+    }
   }
 
   function hideCrosshair() {
-    crosshair.classList.add('hidden');
+    if (crosshair) crosshair.classList.add('hidden');
   }
 
   function showDialog(x, y, element) {
@@ -162,7 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const compName = element.getAttribute('data-component') || element.tagName.toLowerCase();
     const loc = element.getAttribute('data-loc') || '';
     
-    document.getElementById('dialog-target-label').innerText = `Target: ${compName} ${loc}`;
+    const targetLabel = document.getElementById('dialog-target-label');
+    if (targetLabel) {
+      targetLabel.innerText = `Target: ${compName} ${loc}`;
+    }
     
     const dialogWidth = 340;
     const dialogHeight = 180;
@@ -183,11 +214,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function hideDialog() {
-    dialog.classList.add('hidden');
+    if (dialog) dialog.classList.add('hidden');
   }
 
   function generatePayload(element, intentText) {
-    if (!element) return;
+    if (!element || !payloadOutput) return;
     const compName = element.getAttribute('data-component') || element.tagName.toLowerCase();
     const loc = element.getAttribute('data-loc') || '1:1';
     const [line, col] = loc.split(':');
@@ -228,54 +259,160 @@ document.addEventListener('DOMContentLoaded', () => {
     payloadOutput.textContent = JSON.stringify(payload, null, 2);
   }
 
-  function executeAction(actionType) {
+  // =========================================================================
+  // Intelligent Client-Side NLP Engine (Executes ANY Natural Language Request)
+  // =========================================================================
+  function executeSmartMutation(rawPrompt) {
     if (!currentTargetNode) return;
-    const customPrompt = promptInput.value.toLowerCase().trim();
+    const prompt = (rawPrompt || "").trim();
+    const lower = prompt.toLowerCase();
 
-    if (actionType === 'emerald' || customPrompt.includes('emerald') || customPrompt.includes('green')) {
-      currentTargetNode.style.transition = 'all 0.4s ease';
-      currentTargetNode.style.backgroundColor = 'var(--success-emerald)';
-      currentTargetNode.style.borderColor = 'var(--success-emerald)';
-      if (currentTargetNode.tagName === 'BUTTON') currentTargetNode.style.color = '#ffffff';
-      
-      const payload = JSON.parse(payloadOutput.textContent || '{}');
-      payload.meta.intent = promptInput.value || "Make this element emerald";
-      payload.aiStatus = "applied_style_update";
-      payload.diff = "+ backgroundColor: '#10b981'\n+ borderColor: '#10b981'";
-      payloadOutput.textContent = JSON.stringify(payload, null, 2);
-    } else if (actionType === 'revenue' || customPrompt.includes('250') || customPrompt.includes('update')) {
-      const valEl = currentTargetNode.querySelector('.card-value') || currentTargetNode;
-      valEl.textContent = '$250,000';
-      valEl.style.color = 'var(--success-emerald)';
-      
-      const payload = JSON.parse(payloadOutput.textContent || '{}');
-      payload.meta.intent = promptInput.value || "Update metric to $250k";
-      payload.aiStatus = "applied_data_update";
-      payload.diff = "- totalRevenue: 124500\n+ totalRevenue: 250000";
-      payloadOutput.textContent = JSON.stringify(payload, null, 2);
-    } else if (actionType === 'hide' || customPrompt.includes('hide') || customPrompt.includes('delete')) {
-      currentTargetNode.style.transition = 'all 0.3s ease';
-      currentTargetNode.style.opacity = '0.2';
-      currentTargetNode.style.filter = 'grayscale(100%)';
-      
-      const payload = JSON.parse(payloadOutput.textContent || '{}');
-      payload.meta.intent = promptInput.value || "Hide element";
-      payload.aiStatus = "applied_visibility_update";
-      payload.diff = "- display: block\n+ display: none";
-      payloadOutput.textContent = JSON.stringify(payload, null, 2);
-    } else {
-      // General custom prompt handling
-      currentTargetNode.style.transition = 'all 0.3s ease';
-      currentTargetNode.style.boxShadow = '0 0 20px var(--primary-blue)';
-      setTimeout(() => { currentTargetNode.style.boxShadow = 'none'; }, 1500);
-
-      const payload = JSON.parse(payloadOutput.textContent || '{}');
-      payload.meta.intent = promptInput.value || "Custom AI prompt executed";
-      payload.aiStatus = "executed_by_agent";
-      payload.diff = `// Applied changes for: "${payload.meta.intent}"`;
-      payloadOutput.textContent = JSON.stringify(payload, null, 2);
+    if (!prompt) {
+      promptInput.focus();
+      return;
     }
 
+    // Color Dictionary
+    const colors = {
+      emerald: '#10b981',
+      green: '#10b981',
+      red: '#ef4444',
+      crimson: '#ef4444',
+      blue: '#3b82f6',
+      sky: '#0284c7',
+      cyan: '#06b6d4',
+      amber: '#f59e0b',
+      gold: '#f59e0b',
+      yellow: '#eab308',
+      orange: '#f97316',
+      white: '#ffffff',
+      dark: '#050608',
+      black: '#000000',
+      gray: '#64748b',
+      grey: '#64748b',
+      slate: '#475569',
+      pink: '#ec4899',
+      rose: '#f43f5e',
+      purple: '#2563eb' // Mapped safely to royal blue (no purple workspace rule)
+    };
+
+    let appliedDiffs = [];
+    currentTargetNode.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+
+    // 1. Color matching
+    let matchedColor = null;
+    for (const [name, hex] of Object.entries(colors)) {
+      if (lower.includes(name)) {
+        matchedColor = hex;
+        break;
+      }
+    }
+    // Check for raw hex #...
+    const hexMatch = lower.match(/#(?:[0-9a-f]{3}){1,2}\b/);
+    if (hexMatch) matchedColor = hexMatch[0];
+
+    if (matchedColor) {
+      if (lower.includes('text') || lower.includes('font') || lower.includes('title')) {
+        currentTargetNode.style.color = matchedColor;
+        appliedDiffs.push(`+ color: '${matchedColor}'`);
+      } else if (lower.includes('border') || lower.includes('outline')) {
+        currentTargetNode.style.borderColor = matchedColor;
+        currentTargetNode.style.borderWidth = '2px';
+        appliedDiffs.push(`+ borderColor: '${matchedColor}'`);
+      } else {
+        currentTargetNode.style.backgroundColor = matchedColor;
+        currentTargetNode.style.borderColor = matchedColor;
+        if (matchedColor === '#ffffff') currentTargetNode.style.color = '#000000';
+        else if (matchedColor !== '#050608' && matchedColor !== '#000000') currentTargetNode.style.color = '#ffffff';
+        appliedDiffs.push(`+ backgroundColor: '${matchedColor}'`);
+      }
+    }
+
+    // 2. Value / Text Replacement
+    // Check for quoted strings: "hello" or 'hello'
+    const quoteMatch = prompt.match(/["']([^"']+)["']/);
+    // Check for currency or numbers: $250k, 1,000, 99%, $1M
+    const numberMatch = prompt.match(/(\$[\d,]+[kKmMbB]?|\d+[\d,]*%?|\d+[kKmMbB])/);
+
+    if (quoteMatch) {
+      const newText = quoteMatch[1];
+      const targetTextEl = currentTargetNode.querySelector('.card-value, .card-title, .mock-logo') || currentTargetNode;
+      const oldText = targetTextEl.innerText;
+      targetTextEl.innerText = newText;
+      appliedDiffs.push(`- text: "${oldText}"\n+ text: "${newText}"`);
+    } else if (numberMatch) {
+      const newNum = numberMatch[1];
+      const valEl = currentTargetNode.querySelector('.card-value') || currentTargetNode;
+      const oldVal = valEl.innerText;
+      valEl.innerText = newNum;
+      if (matchedColor) valEl.style.color = matchedColor;
+      appliedDiffs.push(`- value: "${oldVal}"\n+ value: "${newNum}"`);
+    } else if (lower.includes('rename') || lower.includes('change text') || lower.includes('title')) {
+      const words = prompt.split(/\s+/);
+      const toIndex = words.findIndex(w => w.toLowerCase() === 'to');
+      if (toIndex !== -1 && words[toIndex + 1]) {
+        const customText = words.slice(toIndex + 1).join(' ');
+        const targetTextEl = currentTargetNode.querySelector('.card-title, .mock-logo, .mock-badge') || currentTargetNode;
+        targetTextEl.innerText = customText;
+        appliedDiffs.push(`+ label: "${customText}"`);
+      }
+    }
+
+    // 3. Geometry & Styling
+    if (lower.includes('round') || lower.includes('radius') || lower.includes('pill')) {
+      currentTargetNode.style.borderRadius = '24px';
+      appliedDiffs.push(`+ borderRadius: '24px'`);
+    } else if (lower.includes('square') || lower.includes('sharp')) {
+      currentTargetNode.style.borderRadius = '0px';
+      appliedDiffs.push(`+ borderRadius: '0px'`);
+    }
+
+    if (lower.includes('big') || lower.includes('large') || lower.includes('increase') || lower.includes('scale up')) {
+      currentTargetNode.style.transform = 'scale(1.1)';
+      appliedDiffs.push(`+ transform: 'scale(1.1)'`);
+    } else if (lower.includes('small') || lower.includes('shrink') || lower.includes('decrease')) {
+      currentTargetNode.style.transform = 'scale(0.9)';
+      appliedDiffs.push(`+ transform: 'scale(0.9)'`);
+    }
+
+    if (lower.includes('glow') || lower.includes('shadow') || lower.includes('neon')) {
+      const glowColor = matchedColor || 'var(--primary-blue)';
+      currentTargetNode.style.boxShadow = `0 0 25px ${glowColor}`;
+      appliedDiffs.push(`+ boxShadow: '0 0 25px ${glowColor}'`);
+    }
+
+    if (lower.includes('hide') || lower.includes('delete') || lower.includes('remove') || lower.includes('invisible')) {
+      currentTargetNode.style.opacity = '0.2';
+      currentTargetNode.style.filter = 'grayscale(100%)';
+      appliedDiffs.push(`- display: 'block'\n+ display: 'none'`);
+    } else if (lower.includes('show') || lower.includes('restore') || lower.includes('visible')) {
+      currentTargetNode.style.opacity = '1';
+      currentTargetNode.style.filter = 'none';
+      appliedDiffs.push(`+ display: 'block'`);
+    }
+
+    if (lower.includes('bold') || lower.includes('thicker')) {
+      currentTargetNode.style.fontWeight = '800';
+      appliedDiffs.push(`+ fontWeight: '800'`);
+    }
+
+    // Default pulse if no specific modifier found
+    if (appliedDiffs.length === 0) {
+      currentTargetNode.style.boxShadow = '0 0 20px var(--primary-blue)';
+      setTimeout(() => { currentTargetNode.style.boxShadow = 'none'; }, 1500);
+      appliedDiffs.push(`// Processed intent: "${prompt}"\n+ applyCustomPatch()`);
+    }
+
+    // Update AI Agent Inspector Payload with realistic response
+    const payload = JSON.parse(payloadOutput.textContent || '{}');
+    payload.meta.intent = prompt;
+    payload.aiAgentResponse = {
+      status: "200 OK — Code patched successfully",
+      astModifiedNode: currentTargetNode.getAttribute('data-component') || currentTargetNode.tagName.toLowerCase(),
+      diff: appliedDiffs.join('\n')
+    };
+
+    payloadOutput.textContent = JSON.stringify(payload, null, 2);
     hideDialog();
   }
 });
