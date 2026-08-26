@@ -27,7 +27,8 @@ export function createMcpServer(): McpServer {
       if (payload.screenshot?.base64) {
         let base64Data = payload.screenshot.base64;
         if (base64Data.startsWith('data:image')) {
-          base64Data = base64Data.split(',')[1];
+          base64Data = base64Data.split(',')[1] ?? base64Data;
+
         }
         content.push({
           type: "image",

@@ -47,7 +47,7 @@ function extractPayload(element: HTMLElement, intent: string, sourceAttr: string
       file = parts.join(':');
     } else if (parts.length === 2) {
       line = parseInt(parts.pop() || '0', 10);
-      file = parts[0];
+      file = parts[0] ?? '';
     } else {
       file = sourceAttr;
     }

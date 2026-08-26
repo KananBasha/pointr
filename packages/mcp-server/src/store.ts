@@ -12,7 +12,8 @@ class PayloadStore {
   }
 
   getLatest(): PointrPayload | null {
-    return this.buffer.length > 0 ? this.buffer[this.buffer.length - 1] : null;
+    return this.buffer.at(-1) ?? null;
+
   }
 
   getAll(): PointrPayload[] {

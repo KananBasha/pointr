@@ -19,7 +19,7 @@ export function showIntentDialog(element: HTMLElement, sourceAttr: string | null
       pointer-events: auto;
     `;
 
-    const title = sourceAttr ? sourceAttr.split(':')[0].split('/').pop() : element.tagName.toLowerCase();
+    const title = sourceAttr ? (sourceAttr.split(':')[0]?.split('/').pop() ?? element.tagName.toLowerCase()) : element.tagName.toLowerCase();
     
     dialogEl.innerHTML = `
       <div style="font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #e2e8f0;">
