@@ -3,6 +3,7 @@
 "@pointr/overlay": minor
 "@pointr/mcp-server": minor
 "@pointr/context-packager": minor
+"@pointr/init": minor
 ---
 
 Initial release of Pointr — AI-native visual element picker for dev workflows.

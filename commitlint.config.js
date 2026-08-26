@@ -9,6 +9,7 @@ module.exports = {
         'overlay',   // @pointr/overlay
         'mcp',       // @pointr/mcp-server
         'packager',  // @pointr/context-packager
+        'init',      // @pointr/init
         'demo',      // apps/demo
         'landing',   // apps/landing
         'docs',      // documentation
