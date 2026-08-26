@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    payloadOutput.innerHTML = JSON.stringify(payload, null, 2);
+    payloadOutput.textContent = JSON.stringify(payload, null, 2);
   }
 
   function executeAction(actionType) {
@@ -211,10 +211,10 @@ document.addEventListener('DOMContentLoaded', () => {
       currentTargetNode.style.borderColor = 'var(--success-emerald)';
       if (currentTargetNode.tagName === 'BUTTON') currentTargetNode.style.color = '#ffffff';
       
-      const payload = JSON.parse(payloadOutput.innerHTML || '{}');
+      const payload = JSON.parse(payloadOutput.textContent || '{}');
       payload.aiAction = "applied_style_update";
       payload.diff = "+ backgroundColor: '#10b981'";
-      payloadOutput.innerHTML = JSON.stringify(payload, null, 2);
+      payloadOutput.textContent = JSON.stringify(payload, null, 2);
     } else if (actionType === 'hide') {
       currentTargetNode.style.transition = 'all 0.3s ease';
       currentTargetNode.style.opacity = '0.2';
