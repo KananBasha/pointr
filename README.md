@@ -22,37 +22,37 @@ Hold `Alt`, click any element in your running app — Pointr instantly sends you
 
 ## Quick Start
 
-> **Note:** Packages are not yet published to npm. Clone the repo and use workspace references for now. npm publish coming soon.
+> **Note:** Packages are not yet published to npm. Clone the repo to use locally. npm publish coming soon.
+
+**1. Clone and build**
 
 ```bash
-# 1. Clone the repo
 git clone https://github.com/KananBasha/pointr
 cd pointr && pnpm install && pnpm build
-
-# 2. Link @pointr/vite-plugin into your project
-# (add to your project's package.json devDependencies with a file: reference)
-# "devDependencies": { "@pointr/vite-plugin": "file:../pointr/packages/vite-plugin" }
-
-# 3. Add to vite.config.ts
-import { pointr } from '@pointr/vite-plugin'
-export default defineConfig({ plugins: [pointr()] })
-
-# 4. Start the local MCP server
-node ../pointr/packages/mcp-server/dist/cli.js
-
-# 5. Configure your agent
 ```
+
+**2. Add to your `vite.config.ts`**
+
+```ts
+import { pointr } from './path/to/pointr/packages/vite-plugin/dist/index.js'
+export default defineConfig({ plugins: [pointr()] })
+```
+
+**3. Start the local MCP server**
+
+```bash
+node ./path/to/pointr/packages/mcp-server/dist/cli.js
+```
+
+**4. Configure your agent**
 
 ```json
-// Claude Code — .claude/mcp.json
-{ "mcpServers": { "pointr": { "url": "http://localhost:3333/mcp" } } }
-
-// Cursor — .cursor/mcp.json
-{ "mcpServers": { "pointr": { "url": "http://localhost:3333/mcp" } } }
-
-// Windsurf — .windsurf/mcp.json
 { "mcpServers": { "pointr": { "url": "http://localhost:3333/mcp" } } }
 ```
+
+Save this to `.claude/mcp.json` (Claude Code), `.cursor/mcp.json` (Cursor), or `.windsurf/mcp.json` (Windsurf).
+
+**5. Hold `Alt` and click any element** — your agent receives full context instantly.
 
 ## Packages
 
