@@ -1,0 +1,81 @@
+{
+  "name": "pointr-vscode",
+  "displayName": "Pointr Companion",
+  "description": "VS Code & Cursor companion for Pointr — auto-focus files and lines clicked in browser runtime",
+  "version": "0.1.0",
+  "publisher": "pointr",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "pointr",
+    "devtools",
+    "ai",
+    "cursor",
+    "context",
+    "overlay"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "pointr.connect",
+        "title": "Pointr: Connect to MCP Server",
+        "category": "Pointr"
+      },
+      {
+        "command": "pointr.openLatest",
+        "title": "Pointr: Open Latest Selected Element",
+        "category": "Pointr"
+      },
+      {
+        "command": "pointr.toggleFollow",
+        "title": "Pointr: Toggle Auto-Open Follow Mode",
+        "category": "Pointr"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Pointr",
+      "properties": {
+        "pointr.serverPort": {
+          "type": "number",
+          "default": 3333,
+          "description": "Port of the Pointr MCP server (auto-discovers 3333-3340 if default unavailable)"
+        },
+        "pointr.autoOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically open and highlight the target file:line when an element is clicked in browser"
+        },
+        "pointr.highlightDuration": {
+          "type": "number",
+          "default": 2000,
+          "description": "Duration (in ms) to highlight the opened source line in the active editor"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ignore-path .gitignore || true",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/vscode": "^1.85.0",
+    "tsup": "^8.2.0",
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.11"
+  }
+}

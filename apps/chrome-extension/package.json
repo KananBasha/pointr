@@ -1,0 +1,20 @@
+{
+  "name": "@pointr/chrome-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone Chrome Manifest V3 Extension for Pointr visual AI context",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/generate-icons.js",
+    "dev": "node scripts/generate-icons.js",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^20.14.9",
+    "jsdom": "^24.1.0",
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.11"
+  }
+}

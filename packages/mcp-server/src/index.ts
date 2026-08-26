@@ -34,6 +34,8 @@ export async function createServer(
   const mcpServer = createMcpServer();
   let sseTransport: SSEServerTransport | null = null;
 
+  const sseClients = new Set<express.Response>();
+
   app.post("/context", (req, res) => {
     try {
       const payload = req.body as PointrPayload;
@@ -41,6 +43,17 @@ export async function createServer(
         return res.status(400).json({ error: "Invalid payload schema" });
       }
       store.push(payload);
+
+      // Broadcast to connected SSE clients
+      for (const client of sseClients) {
+        try {
+          client.write(
+            `event: target-captured\ndata: ${JSON.stringify(payload)}\n\n`
+          );
+        } catch {
+          sseClients.delete(client);
+        }
+      }
 
       console.log("\n--------------------------------------------------");
       console.log(`🎯 [Pointr] Target Captured!`);
@@ -65,6 +78,25 @@ export async function createServer(
       console.error("[Pointr] Error processing payload:", err);
       res.status(500).json({ error: "Failed to process payload" });
     }
+  });
+
+  app.get("/events", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
+
+    sseClients.add(res);
+    res.write(
+      `event: server-status\ndata: ${JSON.stringify({
+        status: "ok",
+        port,
+      })}\n\n`
+    );
+
+    req.on("close", () => {
+      sseClients.delete(res);
+    });
   });
 
   app.get("/context/latest", (req, res) => {

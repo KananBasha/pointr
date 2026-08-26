@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pointr DevTools</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-area">
+        <img src="../icons/icon-48.png" alt="Pointr" class="logo-icon" width="20" height="20">
+        <span class="logo-title">POINTR</span>
+        <span class="version-tag">v0.1.0</span>
+      </div>
+      <div id="connectionPill" class="connection-pill status-connecting">
+        <span class="status-dot"></span>
+        <span id="connectionText" class="status-label">Checking...</span>
+      </div>
+    </header>
+
+    <!-- Main Status Card -->
+    <div class="card status-card">
+      <div class="card-row">
+        <div class="target-info">
+          <div class="section-label">CURRENT TAB</div>
+          <div id="tabHostDisplay" class="tab-host">Checking tab...</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="extensionToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="hotkey-tip">
+        <span class="hotkey-badge">Alt + Click</span>
+        <span class="hotkey-label">any element to inspect & send to AI</span>
+      </div>
+    </div>
+
+    <!-- MCP Server Status & Config -->
+    <div class="card config-card">
+      <div class="card-header">
+        <span class="section-label">MCP SERVER BRIDGE</span>
+        <span id="mcpHealthBadge" class="badge badge-offline">Offline</span>
+      </div>
+
+      <div class="port-config-row">
+        <div class="input-group">
+          <span class="input-prefix">Port:</span>
+          <input type="number" id="mcpPortInput" class="port-input" value="3333" min="1024" max="65535">
+        </div>
+        <button id="testConnectionBtn" class="btn btn-secondary btn-sm">Ping Server</button>
+      </div>
+      <div id="mcpDetailText" class="detail-text">Checking http://localhost:3333/health...</div>
+    </div>
+
+    <!-- Latest Target Preview -->
+    <div class="card preview-card">
+      <div class="card-header">
+        <span class="section-label">LAST CAPTURED CONTEXT</span>
+        <button id="copySnippetBtn" class="btn-icon" title="Copy Markdown Context">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copyBtnText">Copy</span>
+        </button>
+      </div>
+
+      <div id="previewEmpty" class="preview-empty">
+        <span>No context captured yet.</span>
+        <span class="preview-subtext">Hold Alt and click any component on your dev server to capture.</span>
+      </div>
+
+      <div id="previewContent" class="preview-content" style="display: none;">
+        <div class="preview-target-badge" id="previewTargetName">&lt;Component&gt;</div>
+        <div class="preview-source-path" id="previewSourcePath">src/App.tsx:12:4</div>
+        <div class="preview-intent-box">
+          <div class="intent-title">Intent:</div>
+          <div id="previewIntentText" class="intent-text">"Refactor this button style"</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Links -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="https://github.com/hugobefort/pointr" target="_blank" class="footer-link">GitHub</a>
+        <span class="divider">•</span>
+        <a href="https://github.com/hugobefort/pointr/blob/main/docs/architecture.md" target="_blank" class="footer-link">Docs</a>
+        <span class="divider">•</span>
+        <span class="footer-note">Local-First • Zero Telemetry</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

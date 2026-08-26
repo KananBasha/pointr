@@ -23,9 +23,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -46,7 +46,10 @@
     "@babel/generator": "^7.24.0",
     "@babel/parser": "^7.24.0",
     "@babel/traverse": "^7.24.0",
-    "@babel/types": "^7.24.0"
+    "@babel/types": "^7.24.0",
+    "@vue/compiler-sfc": "^3.5.41",
+    "magic-string": "^1.2.3",
+    "svelte": "^5.56.10"
   },
   "devDependencies": {
     "@types/babel__generator": "^7.6.8",

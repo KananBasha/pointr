@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Pointr — Visual Context for AI Coding Agents",
+  "version": "0.1.0",
+  "description": "Visual element picker connecting browser runtime UI to AI coding agents and IDEs on any local dev server.",
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": [
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "http://0.0.0.0/*",
+    "http://*.localhost/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_title": "Pointr DevTools",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "http://0.0.0.0/*",
+        "http://*.localhost/*"
+      ],
+      "js": ["content/overlay-injector.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "content/*"],
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "http://0.0.0.0/*",
+        "http://*.localhost/*"
+      ]
+    }
+  ]
+}
