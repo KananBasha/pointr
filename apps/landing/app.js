@@ -291,6 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Multilingual Color Dictionary (FR & EN)
     const colorMap = {
+      // Gold / Yellow / Amber
+      gold: '#f59e0b',
+      doré: '#f59e0b',
+      dore: '#f59e0b',
+      or: '#f59e0b',
+      amber: '#f59e0b',
+      yellow: '#eab308',
+      jaune: '#eab308',
       // Emerald / Green
       emerald: '#10b981',
       émeraude: '#10b981',
@@ -298,23 +306,17 @@ document.addEventListener('DOMContentLoaded', () => {
       green: '#10b981',
       vert: '#10b981',
       verte: '#10b981',
-      // Red
+      // Red / Crimson
       red: '#ef4444',
       rouge: '#ef4444',
       crimson: '#ef4444',
-      // Blue / Cyan
+      // Blue / Cyan / Sky
       blue: '#3b82f6',
       bleu: '#3b82f6',
       bleue: '#3b82f6',
       sky: '#0284c7',
       cyan: '#06b6d4',
       azur: '#3b82f6',
-      // Gold / Yellow / Amber
-      amber: '#f59e0b',
-      gold: '#f59e0b',
-      or: '#f59e0b',
-      yellow: '#eab308',
-      jaune: '#eab308',
       // Orange
       orange: '#f97316',
       // White
@@ -327,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
       black: '#000000',
       noir: '#000000',
       noire: '#000000',
-      // Gray
+      // Gray / Slate
       gray: '#64748b',
       grey: '#64748b',
       gris: '#64748b',
@@ -345,37 +347,62 @@ document.addEventListener('DOMContentLoaded', () => {
     let appliedDiffs = [];
     currentTargetNode.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
 
-    // 1. Color Matching
-    let matchedColor = null;
-    for (const [name, hex] of Object.entries(colorMap)) {
-      // Word boundary or inclusion check
-      const regex = new RegExp(`\\b${name}\\b`, 'i');
-      if (regex.test(lower) || lower.includes(name)) {
-        matchedColor = hex;
-        break;
+    // Helper: Find color in a given substring
+    function findColor(text) {
+      if (!text) return null;
+      for (const [name, hex] of Object.entries(colorMap)) {
+        const regex = new RegExp(`\\b${name}\\b`, 'i');
+        if (regex.test(text) || text.includes(name)) {
+          return { name, hex };
+        }
       }
+      const hexMatch = text.match(/#(?:[0-9a-f]{3}){1,2}\b/i);
+      if (hexMatch) return { name: hexMatch[0], hex: hexMatch[0] };
+      return null;
     }
-    // Check for raw hex #123456
-    const hexMatch = lower.match(/#(?:[0-9a-f]{3}){1,2}\b/);
-    if (hexMatch) matchedColor = hexMatch[0];
 
-    if (matchedColor) {
-      const isText = lower.includes('text') || lower.includes('texte') || lower.includes('font') || lower.includes('police') || lower.includes('titre') || lower.includes('title') || lower.includes('écrit');
-      const isBorder = lower.includes('border') || lower.includes('bordure') || lower.includes('contour') || lower.includes('outline');
+    // 1. Color Matching & Multi-Clause Extraction
+    const isTextExplicit = lower.includes('text') || lower.includes('texte') || lower.includes('font') || lower.includes('police') || lower.includes('titre') || lower.includes('title') || lower.includes('écrit') || lower.includes('lettre') || lower.includes('couleur du texte');
+    const isBorderExplicit = lower.includes('border') || lower.includes('bordure') || lower.includes('contour') || lower.includes('outline');
+    const isBgExplicit = lower.includes('fond') || lower.includes('background') || lower.includes('bg') || lower.includes('arrière-plan') || lower.includes('arriere plan');
 
-      if (isText) {
-        currentTargetNode.style.color = matchedColor;
-        appliedDiffs.push(`+ color: '${matchedColor}'`);
-      } else if (isBorder) {
-        currentTargetNode.style.borderColor = matchedColor;
+    const globalColor = findColor(lower);
+
+    if (globalColor) {
+      const colorHex = globalColor.hex;
+
+      if (isTextExplicit) {
+        // Apply color directly to node AND all descendant text containers
+        currentTargetNode.style.color = colorHex;
+        currentTargetNode.querySelectorAll('*').forEach(child => {
+          child.style.color = colorHex;
+        });
+        appliedDiffs.push(`+ color: '${colorHex}'`);
+      } else if (isBorderExplicit) {
+        currentTargetNode.style.borderColor = colorHex;
         currentTargetNode.style.borderWidth = '2px';
-        appliedDiffs.push(`+ borderColor: '${matchedColor}'`);
+        appliedDiffs.push(`+ borderColor: '${colorHex}'`);
+      } else if (isBgExplicit) {
+        currentTargetNode.style.backgroundColor = colorHex;
+        currentTargetNode.style.borderColor = colorHex;
+        if (colorHex === '#ffffff') {
+          currentTargetNode.style.color = '#000000';
+          currentTargetNode.querySelectorAll('*').forEach(c => c.style.color = '#000000');
+        } else if (colorHex !== '#050608' && colorHex !== '#000000') {
+          currentTargetNode.style.color = '#ffffff';
+        }
+        appliedDiffs.push(`+ backgroundColor: '${colorHex}'`);
       } else {
-        currentTargetNode.style.backgroundColor = matchedColor;
-        currentTargetNode.style.borderColor = matchedColor;
-        if (matchedColor === '#ffffff') currentTargetNode.style.color = '#000000';
-        else if (matchedColor !== '#050608' && matchedColor !== '#000000') currentTargetNode.style.color = '#ffffff';
-        appliedDiffs.push(`+ backgroundColor: '${matchedColor}'`);
+        // If element is a button or badge, change background + text
+        currentTargetNode.style.backgroundColor = colorHex;
+        currentTargetNode.style.borderColor = colorHex;
+        if (colorHex === '#ffffff') {
+          currentTargetNode.style.color = '#000000';
+          currentTargetNode.querySelectorAll('*').forEach(c => c.style.color = '#000000');
+        } else if (colorHex !== '#050608' && colorHex !== '#000000') {
+          currentTargetNode.style.color = '#ffffff';
+        }
+        appliedDiffs.push(`+ backgroundColor: '${colorHex}'`);
       }
     }
 
@@ -396,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const valEl = currentTargetNode.querySelector('.card-value') || currentTargetNode;
       const oldVal = sanitizeInput(valEl.textContent || '');
       valEl.textContent = newNum;
-      if (matchedColor) valEl.style.color = matchedColor;
+      if (globalColor) valEl.style.color = globalColor.hex;
       appliedDiffs.push(`- value: "${oldVal}"\n+ value: "${newNum}"`);
     } else if (lower.includes('rename') || lower.includes('renommer') || lower.includes('change text') || lower.includes('changer texte') || lower.includes('mettre') || lower.includes('titre') || lower.includes('title')) {
       // Extract target phrase after preposition (to / en / par / à)
@@ -428,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (lower.includes('glow') || lower.includes('lueur') || lower.includes('briller') || lower.includes('shadow') || lower.includes('ombre') || lower.includes('neon')) {
-      const glowColor = matchedColor || 'var(--primary-blue)';
+      const glowColor = globalColor ? globalColor.hex : 'var(--primary-blue)';
       currentTargetNode.style.boxShadow = `0 0 25px ${glowColor}`;
       appliedDiffs.push(`+ boxShadow: '0 0 25px ${glowColor}'`);
     }
