@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import FeatureCard from "./components/FeatureCard";
 
-const BoltIcon = () => (
+const TimeIcon = () => (
   <svg
     width="28"
     height="28"
@@ -15,11 +15,8 @@ const BoltIcon = () => (
     strokeLinejoin="round"
     style={{ color: "#38bdf8" }}
   >
-    <polygon
-      points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
-      fill="currentColor"
-      fillOpacity="0.2"
-    />
+    <circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2" />
+    <polyline points="12 6 12 12 16 14" />
   </svg>
 );
 
@@ -74,7 +71,7 @@ export default function App() {
           <FeatureCard
             title="Zero config"
             description="Install the plugin. That's it."
-            icon={<BoltIcon />}
+            icon={<TimeIcon />}
           />
           <FeatureCard
             title="MCP native"
