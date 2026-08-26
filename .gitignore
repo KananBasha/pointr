@@ -30,3 +30,8 @@ Thumbs.db
 # Changeset temp
 .changeset/*.md
 !.changeset/config.json
+
+# Scratch & Temporary Scripts
+*.py
+*.pyc
+__pycache__/
