@@ -521,9 +521,17 @@ kbd {
   box-shadow: 0 0 8px var(--primary-blue-glow);
 }
 
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .suggestions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
@@ -531,12 +539,35 @@ kbd {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-raw);
   color: var(--text-muted);
-  padding: 0.35rem 0.65rem;
+  padding: 0.3rem 0.6rem;
   border-radius: 4px;
   font-size: 0.75rem;
   cursor: pointer;
   font-family: var(--font-sans);
   transition: all 0.2s;
+}
+
+.suggestion-btn:hover {
+  background: var(--primary-blue-glow);
+  color: #fff;
+  border-color: var(--primary-blue);
+}
+
+.send-btn {
+  background: var(--primary-blue);
+  color: #fff;
+  border: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background 0.2s;
+}
+
+.send-btn:hover {
+  background: #2563eb;
 }
 
 .suggestion-btn:hover {

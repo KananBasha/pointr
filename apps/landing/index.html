@@ -40,10 +40,14 @@
       <span class="dialog-close" id="dialog-close">×</span>
     </div>
     <div class="dialog-body">
-      <input type="text" id="pointr-prompt" placeholder="What do you want to change?" autocomplete="off" aria-label="Pointr prompt input">
-      <div class="suggestions">
-        <button class="suggestion-btn" data-action="emerald">Make this emerald</button>
-        <button class="suggestion-btn" data-action="hide">Hide element</button>
+      <input type="text" id="pointr-prompt" placeholder="What do you want to change? (e.g. make this emerald)" autocomplete="off" aria-label="Pointr prompt input">
+      <div class="dialog-actions">
+        <div class="suggestions">
+          <button class="suggestion-btn" data-action="emerald">Make emerald</button>
+          <button class="suggestion-btn" data-action="revenue">Update to $250k</button>
+          <button class="suggestion-btn" data-action="hide">Hide</button>
+        </div>
+        <button id="pointr-send-btn" class="send-btn">Send &rarr;</button>
       </div>
     </div>
   </div>
