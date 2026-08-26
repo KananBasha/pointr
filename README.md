@@ -2,9 +2,9 @@
 
 > Point at anything in your UI. Your AI agent knows exactly what you mean.
 
-[![npm](https://img.shields.io/npm/v/@pointr/vite-plugin?label=%40pointr%2Fvite-plugin)](https://npmjs.com/package/@pointr/vite-plugin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI](https://github.com/KananBasha/pointr/actions/workflows/ci.yml/badge.svg)](https://github.com/KananBasha/pointr/actions/workflows/ci.yml)
+[![npm coming soon](https://img.shields.io/badge/npm-coming%20soon-orange)](https://github.com/KananBasha/pointr)
 
 Pointr eliminates the **"the button on the top left with X written"** problem.
 
@@ -22,18 +22,25 @@ Hold `Alt`, click any element in your running app — Pointr instantly sends you
 
 ## Quick Start
 
-```bash
-# 1. Install the Vite plugin
-npm install -D @pointr/vite-plugin
+> **Note:** Packages are not yet published to npm. Clone the repo and use workspace references for now. npm publish coming soon.
 
-# 2. Add to vite.config.ts
+```bash
+# 1. Clone the repo
+git clone https://github.com/KananBasha/pointr
+cd pointr && pnpm install && pnpm build
+
+# 2. Link @pointr/vite-plugin into your project
+# (add to your project's package.json devDependencies with a file: reference)
+# "devDependencies": { "@pointr/vite-plugin": "file:../pointr/packages/vite-plugin" }
+
+# 3. Add to vite.config.ts
 import { pointr } from '@pointr/vite-plugin'
 export default defineConfig({ plugins: [pointr()] })
 
-# 3. Start the local MCP server
-npx @pointr/mcp-server
+# 4. Start the local MCP server
+node ../pointr/packages/mcp-server/dist/cli.js
 
-# 4. Configure your agent
+# 5. Configure your agent
 ```
 
 ```json
@@ -51,10 +58,10 @@ npx @pointr/mcp-server
 
 | Package | Description | Version |
 |---------|-------------|---------|
-| [`@pointr/vite-plugin`](packages/vite-plugin) | Vite/Next.js plugin — injects source metadata at build time | [![npm](https://img.shields.io/npm/v/@pointr/vite-plugin)](https://npmjs.com/package/@pointr/vite-plugin) |
-| [`@pointr/overlay`](packages/overlay) | In-browser overlay — Alt+Click element picker | [![npm](https://img.shields.io/npm/v/@pointr/overlay)](https://npmjs.com/package/@pointr/overlay) |
-| [`@pointr/mcp-server`](packages/mcp-server) | Local MCP server — exposes context to AI agents | [![npm](https://img.shields.io/npm/v/@pointr/mcp-server)](https://npmjs.com/package/@pointr/mcp-server) |
-| [`@pointr/context-packager`](packages/context-packager) | Context assembler — fiber, styles, screenshot | [![npm](https://img.shields.io/npm/v/@pointr/context-packager)](https://npmjs.com/package/@pointr/context-packager) |
+| [`@pointr/vite-plugin`](packages/vite-plugin) | Vite/Next.js plugin — injects source metadata at build time | ![version](https://img.shields.io/badge/version-0.1.0-blue) |
+| [`@pointr/overlay`](packages/overlay) | In-browser overlay — Alt+Click element picker | ![version](https://img.shields.io/badge/version-0.1.0-blue) |
+| [`@pointr/mcp-server`](packages/mcp-server) | Local MCP server — exposes context to AI agents | ![version](https://img.shields.io/badge/version-0.1.0-blue) |
+| [`@pointr/context-packager`](packages/context-packager) | Context assembler — fiber, styles, screenshot | ![version](https://img.shields.io/badge/version-0.1.0-blue) |
 
 ## Why Pointr vs Stagewise?
 
