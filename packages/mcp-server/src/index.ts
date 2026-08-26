@@ -57,6 +57,16 @@ export async function createServer(
     res.json(latest);
   });
 
+  app.get("/context/history", (req, res) => {
+    res.json(store.getAll());
+  });
+
+  app.get("/context/recent/:count", (req, res) => {
+    const count = parseInt(req.params.count, 10) || 3;
+    const all = store.getAll();
+    res.json(all.slice(-count));
+  });
+
   app.get("/health", (req, res) => {
     res.json({
       status: "ok",

@@ -1,12 +1,16 @@
-import React from 'react';
+import React from "react";
 
 interface FeatureCardProps {
   title: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
-export default function FeatureCard({ title, description, icon }: FeatureCardProps) {
+export default function FeatureCard({
+  title,
+  description,
+  icon,
+}: FeatureCardProps) {
   return (
     <div className="feature-card">
       <span className="feature-icon">{icon}</span>
