@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointr - Point at anything. Your agent knows.</title>
+    <meta name="description" content="Alt+Click any element in your running app — Pointr sends your AI agent the exact file, line, component tree, props, styles, and screenshot. Instantly.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <header class="hero fade-in">
+            <h1>Point at anything. Your agent knows.</h1>
+            <p class="subtitle">Alt+Click any element in your running app — Pointr sends your AI agent the exact file, line, component tree, props, styles, and screenshot. Instantly.</p>
+            <div class="cta-group">
+                <a href="https://github.com/KananBasha/pointr" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                <a href="#quick-start" class="btn btn-secondary">Read Docs</a>
+            </div>
+        </header>
+
+        <!-- How it works -->
+        <section class="how-it-works fade-in">
+            <h2>How it works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <h3>Install the Vite plugin</h3>
+                    <code>npm install -D @pointr/vite-plugin</code>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <h3>Start the MCP server</h3>
+                    <code>npx @pointr/mcp-server</code>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <h3>Alt+Click anything</h3>
+                    <p>Your agent receives full context</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Packages Section -->
+        <section class="packages fade-in">
+            <h2>Packages</h2>
+            <div class="packages-grid">
+                <div class="package-card">
+                    <h3>@pointr/vite-plugin</h3>
+                    <p>Injects the Pointr overlay into your running Vite application.</p>
+                </div>
+                <div class="package-card">
+                    <h3>@pointr/mcp-server</h3>
+                    <p>Connects your AI agent to the Pointr overlay securely via MCP.</p>
+                </div>
+                <div class="package-card">
+                    <h3>@pointr/core</h3>
+                    <p>Core logic and DOM inspection utilities used across the ecosystem.</p>
+                </div>
+                <div class="package-card">
+                    <h3>@pointr/types</h3>
+                    <p>Shared TypeScript definitions for the Pointr ecosystem.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Table -->
+        <section class="comparison fade-in">
+            <h2>Pointr vs Stagewise</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Pointr</th>
+                            <th>Stagewise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>License</td>
+                            <td class="highlight">MIT ✅</td>
+                            <td>Proprietary</td>
+                        </tr>
+                        <tr>
+                            <td>Architecture</td>
+                            <td class="highlight">MCP-native ✅</td>
+                            <td>Custom integration</td>
+                        </tr>
+                        <tr>
+                            <td>Context Data</td>
+                            <td class="highlight">Fiber + tokens + screenshot ✅</td>
+                            <td>Basic DOM structure</td>
+                        </tr>
+                        <tr>
+                            <td>Distribution</td>
+                            <td class="highlight">npm plugin ✅</td>
+                            <td>Desktop App</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quick Start -->
+        <section id="quick-start" class="quick-start fade-in">
+            <h2>Quick Start</h2>
+            <div class="code-block">
+<pre><code># 1. Install Vite plugin
+npm install -D @pointr/vite-plugin
+
+# 2. Add to vite.config.ts
+import { pointr } from '@pointr/vite-plugin';
+export default defineConfig({
+  plugins: [pointr()]
+});
+
+# 3. Start MCP server
+npx @pointr/mcp-server</code></pre>
+            </div>
+        </section>
+
+        <footer class="footer fade-in">
+            <p>Pointr is MIT licensed. <a href="https://github.com/KananBasha/pointr" target="_blank" rel="noopener noreferrer">GitHub Repository</a>.</p>
+            <p class="muted">npm coming soon.</p>
+        </footer>
+    </div>
+</body>
+</html>
