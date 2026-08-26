@@ -1,14 +1,12 @@
-#!/usr/bin/env node
-import { createServer } from './index.js';
+import { createServer } from "./index.js";
 
 async function main() {
   const args = process.argv.slice(2);
   let port = 3333;
-  
-  const portIndex = args.indexOf('--port');
+
+  const portIndex = args.indexOf("--port");
   if (portIndex !== -1 && args[portIndex + 1]) {
     port = parseInt(args[portIndex + 1]!, 10);
-
   }
 
   try {
@@ -34,7 +32,7 @@ Configure your agent:
   }
 `);
   } catch (err) {
-    console.error('Failed to start Pointr MCP Server:', err);
+    console.error("Failed to start Pointr MCP Server:", err);
     process.exit(1);
   }
 }
