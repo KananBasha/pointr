@@ -89,4 +89,4 @@ MIT © [KananBasha](https://github.com/KananBasha) — see [LICENSE](LICENSE)
 
 ---
 
-*Pointr Cloud (team history, Figma sync, analytics) — coming soon at [pointr.dev](https://pointr.dev)*
+*Pointr Cloud (team history, Figma sync, analytics) — coming soon.*

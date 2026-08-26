@@ -10,7 +10,7 @@
 
 **Do NOT open a public GitHub issue for security vulnerabilities.**
 
-Email: `security@pointr.dev`
+Open a [GitHub Security Advisory](https://github.com/KananBasha/pointr/security/advisories/new) (preferred) or email the maintainer via GitHub profile.
 
 Include:
 - Description of the vulnerability
