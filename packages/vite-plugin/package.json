@@ -2,9 +2,20 @@
   "name": "@pointr/vite-plugin",
   "version": "0.1.0",
   "description": "Vite plugin for Pointr — injects source metadata into JSX elements at build time",
-  "keywords": ["vite", "plugin", "dx", "ai", "mcp", "react", "source-map"],
+  "keywords": [
+    "vite",
+    "plugin",
+    "dx",
+    "ai",
+    "mcp",
+    "react",
+    "source-map"
+  ],
   "homepage": "https://github.com/KananBasha/pointr#readme",
-  "repository": { "type": "git", "url": "https://github.com/KananBasha/pointr" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KananBasha/pointr"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -17,7 +28,9 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -41,6 +54,6 @@
     "tsup": "^8.2.0",
     "typescript": "^5.5.3",
     "vite": "^5.0.0",
-    "vitest": "^2.0.4"
+    "vitest": "^2.1.9"
   }
 }

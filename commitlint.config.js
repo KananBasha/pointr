@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'scope-enum': [
@@ -10,6 +10,7 @@ export default {
         'mcp',       // @pointr/mcp-server
         'packager',  // @pointr/context-packager
         'demo',      // apps/demo
+        'landing',   // apps/landing
         'docs',      // documentation
         'ci',        // GitHub Actions / DevOps
         'release',   // versioning / changesets
@@ -20,3 +21,4 @@ export default {
     'body-max-line-length': [1, 'always', 100],
   },
 };
+

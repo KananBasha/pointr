@@ -1,7 +1,7 @@
 {
   "name": "@pointr/mcp-server",
   "version": "0.1.0",
-  "description": "Local MCP server for Pointr \u2014 exposes selected element context to AI coding agents",
+  "description": "Local MCP server for Pointr — exposes selected element context to AI coding agents",
   "keywords": [
     "mcp",
     "ai",
@@ -39,9 +39,9 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "cors": "^2.8.5",
     "express": "^4.19.0",
     "ws": "^8.18.0",
-    "cors": "^2.8.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -50,6 +50,6 @@
     "@types/ws": "^8.5.12",
     "tsup": "^8.2.0",
     "typescript": "^5.5.3",
-    "vitest": "^2.0.4"
+    "vitest": "^2.1.9"
   }
 }
