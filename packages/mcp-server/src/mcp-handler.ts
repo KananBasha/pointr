@@ -4,7 +4,7 @@ import { store } from "./store.js";
 export function createMcpServer(): McpServer {
   const server = new McpServer({
     name: "Pointr MCP Server",
-    version: "0.1.0"
+    version: "0.1.0",
   });
 
   server.tool(
@@ -14,26 +14,33 @@ export function createMcpServer(): McpServer {
     async () => {
       const payload = store.getLatest();
       if (!payload) {
+        console.log(
+          "[Pointr] ⚠️ AI Agent queried context, but no element has been selected yet."
+        );
         return {
-          content: [{
-            type: "text",
-            text: "No element context found. Please Alt+Click an element in your development server using the Pointr overlay."
-          }]
+          content: [
+            {
+              type: "text",
+              text: "No element context found. Please Alt+Click an element in your development server using the Pointr overlay.",
+            },
+          ],
         };
       }
 
+      console.log(
+        `[Pointr] 🤖 AI Agent requested context for: ${payload.source.file}:${payload.source.line}`
+      );
       const content: any[] = [{ type: "text", text: payload.markdown }];
-      
+
       if (payload.screenshot?.base64) {
         let base64Data = payload.screenshot.base64;
-        if (base64Data.startsWith('data:image')) {
-          base64Data = base64Data.split(',')[1] ?? base64Data;
-
+        if (base64Data.startsWith("data:image")) {
+          base64Data = base64Data.split(",")[1] ?? base64Data;
         }
         content.push({
           type: "image",
           data: base64Data,
-          mimeType: "image/png"
+          mimeType: "image/png",
         });
       }
 
