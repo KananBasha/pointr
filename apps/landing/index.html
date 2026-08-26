@@ -1,130 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pointr - Point at anything. Your agent knows.</title>
-    <meta name="description" content="Alt+Click any element in your running app — Pointr sends your AI agent the exact file, line, component tree, props, styles, and screenshot. Instantly.">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Primary Meta Tags -->
+  <title>Pointr — Visual Context for AI Coding Agents</title>
+  <meta name="title" content="Pointr — Visual Context for AI Coding Agents">
+  <meta name="description" content="Stop describing UI to your AI. Alt+Click to instantly capture and share exact source code context with your AI coding agent.">
+  <meta name="theme-color" content="#070709">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kananbasha.github.io/pointr/">
+  <meta property="og:title" content="Pointr — Visual Context for AI Coding Agents">
+  <meta property="og:description" content="Stop describing UI to your AI. Alt+Click to instantly capture and share exact source code context with your AI coding agent.">
+  <meta property="og:image" content="https://kananbasha.github.io/pointr/og-image.jpg">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://kananbasha.github.io/pointr/">
+  <meta name="twitter:title" content="Pointr — Visual Context for AI Coding Agents">
+  <meta name="twitter:description" content="Stop describing UI to your AI. Alt+Click to instantly capture and share exact source code context with your AI coding agent.">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 2v20'/%3E%3Cpath d='M2 12h20'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Hero Section -->
-        <header class="hero fade-in">
-            <h1>Point at anything. Your agent knows.</h1>
-            <p class="subtitle">Alt+Click any element in your running app — Pointr sends your AI agent the exact file, line, component tree, props, styles, and screenshot. Instantly.</p>
-            <div class="cta-group">
-                <a href="https://github.com/KananBasha/pointr" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-                <a href="#quick-start" class="btn btn-secondary">Read Docs</a>
-            </div>
-        </header>
 
-        <!-- How it works -->
-        <section class="how-it-works fade-in">
-            <h2>How it works</h2>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-num">1</div>
-                    <h3>Install the Vite plugin</h3>
-                    <code>npm install -D @pointr/vite-plugin</code>
-                </div>
-                <div class="step-card">
-                    <div class="step-num">2</div>
-                    <h3>Start the MCP server</h3>
-                    <code>npx @pointr/mcp-server</code>
-                </div>
-                <div class="step-card">
-                    <div class="step-num">3</div>
-                    <h3>Alt+Click anything</h3>
-                    <p>Your agent receives full context</p>
-                </div>
-            </div>
-        </section>
+  <!-- The Pointr Target Crosshair -->
+  <div id="pointr-crosshair" class="hidden">
+    <div class="crosshair-label" id="crosshair-label">Element</div>
+  </div>
 
-        <!-- Packages Section -->
-        <section class="packages fade-in">
-            <h2>Packages</h2>
-            <div class="packages-grid">
-                <div class="package-card">
-                    <h3>@pointr/vite-plugin</h3>
-                    <p>Injects the Pointr overlay into your running Vite application.</p>
-                </div>
-                <div class="package-card">
-                    <h3>@pointr/mcp-server</h3>
-                    <p>Connects your AI agent to the Pointr overlay securely via MCP.</p>
-                </div>
-                <div class="package-card">
-                    <h3>@pointr/core</h3>
-                    <p>Core logic and DOM inspection utilities used across the ecosystem.</p>
-                </div>
-                <div class="package-card">
-                    <h3>@pointr/types</h3>
-                    <p>Shared TypeScript definitions for the Pointr ecosystem.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Comparison Table -->
-        <section class="comparison fade-in">
-            <h2>Pointr vs Stagewise</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Pointr</th>
-                            <th>Stagewise</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>License</td>
-                            <td class="highlight">MIT ✅</td>
-                            <td>Proprietary</td>
-                        </tr>
-                        <tr>
-                            <td>Architecture</td>
-                            <td class="highlight">MCP-native ✅</td>
-                            <td>Custom integration</td>
-                        </tr>
-                        <tr>
-                            <td>Context Data</td>
-                            <td class="highlight">Fiber + tokens + screenshot ✅</td>
-                            <td>Basic DOM structure</td>
-                        </tr>
-                        <tr>
-                            <td>Distribution</td>
-                            <td class="highlight">npm plugin ✅</td>
-                            <td>Desktop App</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Quick Start -->
-        <section id="quick-start" class="quick-start fade-in">
-            <h2>Quick Start</h2>
-            <div class="code-block">
-<pre><code># 1. Install Vite plugin
-npm install -D @pointr/vite-plugin
-
-# 2. Add to vite.config.ts
-import { pointr } from '@pointr/vite-plugin';
-export default defineConfig({
-  plugins: [pointr()]
-});
-
-# 3. Start MCP server
-npx @pointr/mcp-server</code></pre>
-            </div>
-        </section>
-
-        <footer class="footer fade-in">
-            <p>Pointr is MIT licensed. <a href="https://github.com/KananBasha/pointr" target="_blank" rel="noopener noreferrer">GitHub Repository</a>.</p>
-            <p class="muted">npm coming soon.</p>
-        </footer>
+  <!-- Simulated Pointr Dialog Overlay -->
+  <div id="pointr-dialog" class="hidden">
+    <div class="dialog-header">
+      <span class="dialog-target" id="dialog-target-label">Target</span>
+      <span class="dialog-close" id="dialog-close">×</span>
     </div>
+    <div class="dialog-body">
+      <input type="text" id="pointr-prompt" placeholder="What do you want to change?" autocomplete="off" aria-label="Pointr prompt input">
+      <div class="suggestions">
+        <button class="suggestion-btn" data-action="emerald">Make this emerald</button>
+        <button class="suggestion-btn" data-action="hide">Hide element</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="logo-icon">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="2" x2="12" y2="22"></line>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+      </svg>
+      <span>POINTR</span>
+    </div>
+    <nav class="nav-links">
+      <a href="https://github.com/KananBasha/pointr/tree/main/docs" target="_blank" rel="noopener noreferrer">Docs</a>
+      <a href="https://github.com/KananBasha/pointr" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <button class="btn-primary install-btn" onclick="navigator.clipboard.writeText('npx @pointr/init'); alert('Copied: npx @pointr/init');">
+        <span class="cmd">npx @pointr/init</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Z-Axis Layered Hero -->
+    <section class="hero">
+      <div class="hero-bg-grid"></div>
+      
+      <div class="hero-content">
+        <div class="hero-badge">⚡ MCP-Native • Open Source (MIT) • Zero-Config CLI</div>
+        <h1 class="massive-title">Stop pointing.<br>Start coding.</h1>
+        <p class="subtitle">Give your AI agent the exact context in one <kbd>Alt</kbd> + Click.<br>No more vague descriptions. No more hallucinations.</p>
+      </div>
+
+      <!-- Live Demo Sandbox -->
+      <div class="demo-wrapper">
+        <div class="demo-instructions">
+          <span class="pulse-dot"></span>
+          <span>Hold <kbd>Alt</kbd> (or <kbd>Option</kbd>) and hover over the UI below to scan elements.</span>
+          <button id="toggle-mode-btn" class="toggle-mode-btn">🎯 Toggle Pointr Mode</button>
+        </div>
+        
+        <div class="demo-split">
+          <!-- Left: Mock App -->
+          <div class="mock-app" id="demo-container">
+            <div class="mock-header" data-component="Header.tsx" data-loc="12:4">
+              <div class="mock-logo">Analytics</div>
+              <div class="mock-badge" data-component="Badge.tsx" data-loc="4:1">Pro Plan</div>
+            </div>
+            
+            <div class="mock-stats">
+              <div class="mock-card" data-component="StatCard.tsx" data-loc="22:8">
+                <div class="card-title">Total Revenue</div>
+                <div class="card-value" id="demo-value-1">$124,500</div>
+              </div>
+              <div class="mock-card" data-component="StatCard.tsx" data-loc="23:8">
+                <div class="card-title">Active Users</div>
+                <div class="card-value">1,432</div>
+              </div>
+            </div>
+
+            <div class="mock-controls">
+              <button class="mock-btn" id="demo-action-btn" data-component="Button.tsx" data-loc="45:2">Generate Report</button>
+              <div class="mock-toggle" data-component="Toggle.tsx" data-loc="50:2">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: AI Payload Output -->
+          <div class="payload-panel">
+            <div class="panel-header">AI Agent Inspector (MCP Protocol)</div>
+            <pre><code id="payload-output" class="language-json">// Pointr payload will appear here...
+// Hold Alt + Click an element or click "Toggle Pointr Mode"</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metaphor Glitch Section -->
+    <section class="comparison-section">
+      <h2 class="section-title">The Pain vs The Solution</h2>
+      <div class="comparison-grid">
+        <!-- Without Pointr -->
+        <article class="comp-card chaos">
+          <div class="card-tag red">WITHOUT POINTR</div>
+          <h3>Vague Text Descriptions</h3>
+          <div class="chat-mock">
+            <div class="chat-bubble user glitch-text">
+              "Change the button on the top left... no not that one, the other one inside the card..."
+            </div>
+            <div class="chat-bubble ai">
+              ⚠️ AI edits the wrong component, breaks unrelated CSS, destroys responsive layout.
+            </div>
+          </div>
+        </article>
+
+        <!-- With Pointr -->
+        <article class="comp-card precision">
+          <div class="card-tag green">WITH POINTR</div>
+          <h3>Laser Precision</h3>
+          <div class="code-flow">
+            <div class="flow-step"><code>1. Alt+Click Target</code> &rarr; <code>Header.tsx:12:4</code></div>
+            <div class="flow-step"><code>2. Context Packager</code> &rarr; Fiber Tree + Computed Styles</div>
+            <div class="flow-step success"><code>3. Agent Executes</code> &rarr; 100% Accuracy First Try ✅</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Architecture & Features -->
+    <section class="features-section">
+      <h2 class="section-title">Built for Modern AI-First Engineering</h2>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🎯</div>
+          <h3>Surgical Precision</h3>
+          <p>Extracts file path, line number, column, and AST node at build-time with zero runtime overhead.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🤖</div>
+          <h3>MCP-Native</h3>
+          <p>Built directly on the Model Context Protocol. Works out of the box with Claude Code, Cursor, and Windsurf.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">⚡</div>
+          <h3>Zero Configuration</h3>
+          <p>Run <code>npx @pointr/init</code> in any Vite or Next.js project. Patches config and IDE settings in 2 seconds.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🛡️</div>
+          <h3>MIT Licensed</h3>
+          <p>100% free and open source. No restrictive licenses, no telemetry, no vendor lock-in.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="table-section">
+      <h2 class="section-title">Pointr vs The Alternatives</h2>
+      <div class="table-wrapper">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Pointr</th>
+              <th>Stagewise</th>
+              <th>Manual Prompting</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>License</td>
+              <td class="highlight">MIT (Open Source) ✅</td>
+              <td>AGPL / Proprietary</td>
+              <td>N/A</td>
+            </tr>
+            <tr>
+              <td>Protocol</td>
+              <td class="highlight">Native MCP (Port 3333) ✅</td>
+              <td>Custom WebSockets</td>
+              <td>Manual Copy-Paste</td>
+            </tr>
+            <tr>
+              <td>Context Depth</td>
+              <td class="highlight">Fiber + Styles + Selector + Line ✅</td>
+              <td>DOM only</td>
+              <td>Vague Descriptions</td>
+            </tr>
+            <tr>
+              <td>Frameworks</td>
+              <td class="highlight">Vite + Next.js (App & Pages) ✅</td>
+              <td>Vite only</td>
+              <td>Any</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>Pointr is an open-source project released under the <a href="https://github.com/KananBasha/pointr/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>.</p>
+      <p class="footer-sub"><a href="https://github.com/KananBasha/pointr" target="_blank" rel="noopener noreferrer">GitHub Repository</a> • <a href="https://github.com/KananBasha/pointr/tree/main/docs" target="_blank" rel="noopener noreferrer">Documentation</a></p>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
 </body>
 </html>
-<!-- deployed 2026-08-26T11:43:24Z -->

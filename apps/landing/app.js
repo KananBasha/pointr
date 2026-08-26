@@ -1,7 +1,9 @@
-// Vanilla JS for Interactive Demo
+// Vanilla JS for Pointr Landing Interactive Demo
 document.addEventListener('DOMContentLoaded', () => {
   let isAltPressed = false;
+  let isPointrModeActive = false;
   let hoveredElement = null;
+  let currentTargetNode = null;
   
   const crosshair = document.getElementById('pointr-crosshair');
   const crosshairLabel = document.getElementById('crosshair-label');
@@ -9,7 +11,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const dialog = document.getElementById('pointr-dialog');
   const payloadOutput = document.getElementById('payload-output');
   const promptInput = document.getElementById('pointr-prompt');
-  
+  const toggleBtn = document.getElementById('toggle-mode-btn');
+
+  // Toggle Mode Button
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isPointrModeActive = !isPointrModeActive;
+      if (isPointrModeActive) {
+        toggleBtn.innerText = '🎯 Pointr Mode: ACTIVE';
+        toggleBtn.style.background = 'var(--success-emerald)';
+        demoContainer.style.cursor = 'crosshair';
+      } else {
+        toggleBtn.innerText = '🎯 Toggle Pointr Mode';
+        toggleBtn.style.background = 'var(--primary-blue)';
+        demoContainer.style.cursor = 'default';
+        hideCrosshair();
+        clearHoverStyles();
+      }
+    });
+  }
+
   // Track Alt Key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Alt' || e.key === 'Option') {
@@ -24,15 +46,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keyup', (e) => {
     if (e.key === 'Alt' || e.key === 'Option') {
       isAltPressed = false;
-      demoContainer.style.cursor = 'default';
-      hideCrosshair();
-      clearHoverStyles();
+      if (!isPointrModeActive) {
+        demoContainer.style.cursor = 'default';
+        hideCrosshair();
+        clearHoverStyles();
+      }
     }
   });
 
+  function isActive() {
+    return isAltPressed || isPointrModeActive;
+  }
+
   // Track Mouse Movement inside demo container
   demoContainer.addEventListener('mousemove', (e) => {
-    if (!isAltPressed) return;
+    if (!isActive()) return;
     
     // Find closest element with data-component
     const target = e.target.closest('[data-component]') || e.target;
@@ -46,26 +74,29 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   demoContainer.addEventListener('mouseleave', () => {
-    clearHoverStyles();
-    hideCrosshair();
-    hoveredElement = null;
+    if (!isPointrModeActive) {
+      clearHoverStyles();
+      hideCrosshair();
+      hoveredElement = null;
+    }
   });
 
-  // Handle Alt+Click
+  // Handle Alt+Click or Click when Pointr Mode is active
   demoContainer.addEventListener('click', (e) => {
-    if (!isAltPressed || !hoveredElement) return;
+    if (!isActive() || !hoveredElement) return;
     
     e.preventDefault();
     e.stopPropagation();
     
     showDialog(e.clientX, e.clientY, hoveredElement);
-    isAltPressed = false; // Reset to avoid getting stuck
+    if (!isPointrModeActive) isAltPressed = false;
     hideCrosshair();
     clearHoverStyles();
   });
 
   // Dialog interactions
-  document.getElementById('dialog-close').addEventListener('click', hideDialog);
+  const closeBtn = document.getElementById('dialog-close');
+  if (closeBtn) closeBtn.addEventListener('click', hideDialog);
   
   document.querySelectorAll('.suggestion-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -106,8 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     crosshair.classList.add('hidden');
   }
 
-  let currentTargetNode = null;
-
   function showDialog(x, y, element) {
     currentTargetNode = element;
     const compName = element.getAttribute('data-component') || element.tagName.toLowerCase();
@@ -115,9 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     document.getElementById('dialog-target-label').innerText = `Target: ${compName} ${loc}`;
     
-    // Position dialog safely within viewport
     const dialogWidth = 320;
-    const dialogHeight = 150;
+    const dialogHeight = 160;
     
     let posX = x + 10;
     let posY = y + 10;
@@ -128,40 +156,46 @@ document.addEventListener('DOMContentLoaded', () => {
     dialog.style.left = `${posX}px`;
     dialog.style.top = `${posY}px`;
     dialog.classList.remove('hidden');
-    
-    // Small delay to allow CSS transition
-    setTimeout(() => {
-      dialog.classList.add('visible');
-      promptInput.focus();
-    }, 10);
+    promptInput.focus();
     
     generatePayload(element);
   }
 
   function hideDialog() {
-    dialog.classList.remove('visible');
-    setTimeout(() => {
-      dialog.classList.add('hidden');
-      promptInput.value = '';
-    }, 200);
+    dialog.classList.add('hidden');
+    promptInput.value = '';
   }
 
   function generatePayload(element) {
     const compName = element.getAttribute('data-component') || element.tagName.toLowerCase();
-    const loc = element.getAttribute('data-loc') || '';
+    const loc = element.getAttribute('data-loc') || '1:1';
+    const [line, col] = loc.split(':');
     
     const payload = {
-      type: "pointr_target",
-      file: compName,
-      location: loc,
-      domState: {
-        tag: element.tagName.toLowerCase(),
-        classes: Array.from(element.classList).filter(c => c !== 'pointr-hovered').join(' '),
-        innerText: element.innerText.substring(0, 50) + (element.innerText.length > 50 ? '...' : '')
+      source: {
+        file: `src/components/${compName}`,
+        line: parseInt(line || '1', 10),
+        column: parseInt(col || '1', 10),
+        snippet: `<${compName}>\n  ${element.innerText.trim()}\n</${compName}>`
       },
-      computedStyle: {
-        background: window.getComputedStyle(element).backgroundColor,
-        color: window.getComputedStyle(element).color
+      componentTree: [
+        { name: "App", file: "src/App.tsx" },
+        { name: "DashboardLayout", file: "src/components/DashboardLayout.tsx" },
+        { name: compName.replace('.tsx', ''), file: `src/components/${compName}` }
+      ],
+      dom: {
+        tagName: element.tagName.toLowerCase(),
+        textContent: element.innerText.substring(0, 40)
+      },
+      styles: {
+        computed: {
+          backgroundColor: window.getComputedStyle(element).backgroundColor,
+          color: window.getComputedStyle(element).color
+        }
+      },
+      meta: {
+        intent: promptInput.value || "Selected element via Pointr overlay",
+        timestamp: new Date().toISOString()
       }
     };
 
@@ -172,24 +206,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentTargetNode) return;
 
     if (actionType === 'emerald') {
-      currentTargetNode.style.transition = 'all 0.5s ease';
+      currentTargetNode.style.transition = 'all 0.4s ease';
       currentTargetNode.style.backgroundColor = 'var(--success-emerald)';
       currentTargetNode.style.borderColor = 'var(--success-emerald)';
-      if(currentTargetNode.tagName === 'BUTTON') currentTargetNode.style.color = '#fff';
+      if (currentTargetNode.tagName === 'BUTTON') currentTargetNode.style.color = '#ffffff';
       
       const payload = JSON.parse(payloadOutput.innerHTML || '{}');
-      payload.ai_action = "applied_style_update";
+      payload.aiAction = "applied_style_update";
       payload.diff = "+ backgroundColor: '#10b981'";
       payloadOutput.innerHTML = JSON.stringify(payload, null, 2);
-    }
-    else if (actionType === 'hide') {
-      currentTargetNode.style.transition = 'opacity 0.3s ease';
+    } else if (actionType === 'hide') {
+      currentTargetNode.style.transition = 'all 0.3s ease';
       currentTargetNode.style.opacity = '0.2';
-      currentTargetNode.style.pointerEvents = 'none';
-      currentTargetNode.style.filter = 'grayscale(100%) dashed';
-    }
-    else {
-      // Custom action visualization
+      currentTargetNode.style.filter = 'grayscale(100%)';
+    } else {
       currentTargetNode.style.outline = '2px solid var(--primary-blue)';
       setTimeout(() => { currentTargetNode.style.outline = 'none'; }, 1000);
     }
