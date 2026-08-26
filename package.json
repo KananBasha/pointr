@@ -24,7 +24,7 @@
     "lint-staged": "^15.2.5",
     "turbo": "^2.0.6",
     "typescript": "^5.5.3",
-    "vitest": "^2.1.9"
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -35,5 +35,10 @@
     "*.{ts,tsx,json,md,yaml,yml}": [
       "prettier --write"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "esbuild": "^0.28.2"
+    }
   }
 }
