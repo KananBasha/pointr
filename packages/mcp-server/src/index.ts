@@ -75,16 +75,33 @@ export async function createServer(
     });
   });
 
+  const transports = new Map<string, SSEServerTransport>();
+
   app.get("/mcp", async (req, res) => {
-    sseTransport = new SSEServerTransport("/message", res);
-    await mcpServer.server.connect(sseTransport);
+    try {
+      const transport = new SSEServerTransport("/message", res);
+      transports.set(transport.sessionId, transport);
+      res.on("close", () => {
+        transports.delete(transport.sessionId);
+      });
+      await mcpServer.server.connect(transport);
+    } catch (err) {
+      console.error("[Pointr] Error in SSE connection:", err);
+      if (!res.headersSent) {
+        res.status(500).send("Error initializing SSE transport");
+      }
+    }
   });
 
   app.post("/message", async (req, res) => {
-    if (sseTransport) {
-      await sseTransport.handlePostMessage(req, res);
+    const sessionId = req.query.sessionId as string;
+    const transport =
+      (sessionId && transports.get(sessionId)) ||
+      Array.from(transports.values())[0];
+    if (transport) {
+      await transport.handlePostMessage(req, res);
     } else {
-      res.status(400).send("SSE transport not initialized");
+      res.status(404).send("Session not found");
     }
   });
 
