@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "typeRoots": [
+      "./src/types",
+      "../../node_modules/@types",
+      "../../packages/mcp-server/node_modules/@types",
+      "../../apps/chrome-extension/node_modules/@types"
+    ]
+  },
+  "include": ["src/main/**/*", "src/preload/**/*", "src/types/**/*"]
+}

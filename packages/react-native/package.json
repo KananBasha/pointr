@@ -1,0 +1,82 @@
+{
+  "name": "@pointr/react-native",
+  "version": "0.1.0",
+  "description": "Visual AI context picker for React Native and Expo applications",
+  "keywords": [
+    "react-native",
+    "expo",
+    "mobile",
+    "dx",
+    "ai",
+    "mcp",
+    "pointr",
+    "overlay",
+    "inspector"
+  ],
+  "homepage": "https://github.com/KananBasha/pointr#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KananBasha/pointr"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./babel": {
+      "types": "./dist/babel-plugin.d.ts",
+      "import": "./dist/babel-plugin.mjs",
+      "require": "./dist/babel-plugin.js"
+    },
+    "./overlay": {
+      "types": "./dist/overlay.d.ts",
+      "import": "./dist/overlay.mjs",
+      "require": "./dist/overlay.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@babel/parser": "^7.24.0",
+    "@babel/traverse": "^7.24.0",
+    "@babel/types": "^7.24.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__traverse": "^7.20.6",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-native": "^0.73.0",
+    "react": "18.3.1",
+    "react-native": "0.76.0",
+    "tsup": "^8.2.0",
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.11"
+  }
+}

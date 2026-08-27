@@ -1,0 +1,21 @@
+{
+  appId: "dev.pointr.desktop",
+  productName: "Pointr Companion",
+  directories: {
+    output: "release",
+    buildResources: "resources"
+  },
+  mac: {
+    target: ["dmg", "zip"],
+    category: "public.app-category.developer-tools",
+    hardenedRuntime: true,
+    gatekeeperAssess: false
+  },
+  win: {
+    target: ["nsis", "portable"]
+  },
+  linux: {
+    target: ["AppImage", "deb"],
+    category: "Development"
+  }
+}
